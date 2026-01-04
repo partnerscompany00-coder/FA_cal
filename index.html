@@ -2,28 +2,28 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>영업의 전설 : 내 가치 찾기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MANAGER OF SALES : 스카우팅 리포트</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Dalgona/neodgm/neodgm.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         :root {
-            /* 12-bit Dark Fantasy Palette */
-            --bg-color: #202028;       /* Dark Slate */
-            --window-bg: #111111;      /* Almost Black */
-            --text-color: #f0f0f0;     /* Off White */
-            --accent-color: #fbbf24;   /* Amber/Gold */
-            --highlight-color: #3b82f6; /* Blue */
-            --border-color: #ffffff;
-            --placeholder-color: #60a5fa;
+            --fm-bg: #1e1e24;       /* Deep Grey/Black */
+            --fm-sidebar: #2b2b36;  /* Sidebar Grey */
+            --fm-accent: #8b5cf6;   /* FM Purple */
+            --fm-text: #e2e8f0;     /* White/Grey Text */
+            --fm-green: #10b981;    /* Attribute Green */
+            --fm-red: #ef4444;      /* Alert Red */
+            --fm-blue: #3b82f6;     /* Button Blue */
+            --fm-gold: #f59e0b;     /* Star Rating Gold */
         }
 
         body {
-            font-family: 'NeoDungGeunMo', monospace;
-            background-color: #1a1a1a;
-            color: var(--text-color);
+            font-family: 'Pretendard', sans-serif;
+            background-color: #111;
+            color: var(--fm-text);
             overflow-x: hidden;
             display: flex;
             justify-content: center;
@@ -34,486 +34,568 @@
         }
 
         /* Main Game Container */
-        .game-frame {
+        .fm-frame {
             width: 100%;
             max-width: 480px;
-            height: 100vh;
-            /* Mobile viewport fix */
-            height: 100dvh; 
+            height: 100dvh; /* Mobile viewport fix */
             max-height: 900px;
-            background-color: var(--bg-color);
-            /* Grid Pattern */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--fm-bg);
             position: relative;
             display: flex;
             flex-direction: column;
-            border: 4px solid #444;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
             overflow: hidden;
         }
 
-        /* RPG Window Style */
-        .rpg-box {
-            background-color: var(--window-bg);
-            border: 4px double var(--border-color);
-            border-radius: 4px;
-            padding: 16px;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
-            color: var(--text-color);
-            position: relative;
-            width: 100%;
-        }
-
-        /* Top HUD */
-        .hud {
-            padding: 10px 16px;
-            background-color: var(--window-bg);
-            border-bottom: 4px double var(--border-color);
+        /* Top Header (FM Style) */
+        .fm-header {
+            background-color: var(--fm-sidebar);
+            border-bottom: 1px solid #444;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
             z-index: 20;
             flex-shrink: 0;
         }
-        .hud-label { color: var(--accent-color); font-size: 10px; letter-spacing: 1px; display: block;}
+        .header-title {
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-date {
+            font-size: 12px;
+            color: #9ca3af;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
 
-        /* Main Scene */
+        /* Main Scene Content */
         .scene {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Start from top to utilize space */
             padding: 20px;
-            padding-bottom: 160px; /* Space for dialogue */
+            padding-bottom: 90px; /* Reduced space for smaller message box */
             overflow-y: auto;
             position: relative;
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #555 #222;
         }
-        
-        /* Center content vertically when needed (Intro) */
-        .scene.center-content {
-            justify-content: center;
-        }
+        .scene.center-content { justify-content: center; }
 
-        /* NPC/Character Container */
-        .npc-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-        .npc-container.hidden {
-            display: none;
-        }
-        
-        /* Portrait Frame */
-        .npc-frame {
-            position: relative;
-            background: #2d3748;
-            border: 4px solid #fff;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
-            padding: 6px;
-        }
-        .npc-bg {
-            background: #4a5568;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .npc-img {
-            width: 90px;
-            height: 90px;
-            image-rendering: pixelated;
-            filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
-        }
-
-        /* Title Screen */
-        .title-screen {
+        /* Intro Screen */
+        .intro-screen {
             text-align: center;
-            z-index: 5;
-            padding: 20px;
             width: 100%;
         }
-        .title-main {
-            font-size: 40px;
-            color: var(--accent-color);
-            text-shadow: 4px 4px 0 #000;
-            line-height: 1.2;
+        .intro-logo {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1.1;
             margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .title-sub {
-            color: #fff;
-            background: #000;
-            padding: 4px 12px;
-            border: 2px solid #fff;
-            display: inline-block;
+        .intro-sub {
+            color: var(--fm-accent);
             font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
         }
-        .press-start {
-            margin-top: 50px;
-            color: #fff;
-            animation: blink 0.8s step-end infinite;
-            font-size: 18px;
-            cursor: pointer;
+        .start-btn {
+            background: var(--fm-red);
+            color: white;
+            font-weight: 700;
+            padding: 14px 40px;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #991b1b;
+        }
+        .start-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
-        /* Menus */
+        /* Menus / Steps */
         .menu-wrapper {
             width: 100%;
-            max-width: 400px;
             display: none;
             flex-direction: column;
             gap: 12px;
-            z-index: 20;
-            animation: fadeIn 0.3s;
+            animation: fadeIn 0.3s ease-out;
         }
         .menu-wrapper.active { display: flex; }
 
-        /* Pixel Buttons */
-        .pixel-btn {
-            background: var(--bg-color);
-            border: 2px solid #666;
-            color: #ccc;
-            padding: 14px 16px;
-            font-family: 'NeoDungGeunMo';
-            font-size: 16px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.1s;
-            position: relative;
-            box-shadow: 2px 2px 0 #000;
-            margin-bottom: 8px;
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* FM Box Style */
+        .fm-box {
+            background: #2b2b36;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 0; /* Removing padding to let header flush */
+            margin-bottom: 10px;
+            overflow: hidden;
         }
-        .pixel-btn:hover, .pixel-btn:active, .pixel-btn.selected {
-            background: #2d3748;
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0 #000;
+        .fm-box-header {
+            background: #363642;
+            padding: 10px 15px;
+            border-bottom: 1px solid #444;
+            font-size: 13px;
+            font-weight: 700;
+            color: #d1d5db;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
         }
-        .pixel-btn:hover::after, .pixel-btn.selected::after {
-            content: '◀';
-            position: absolute;
-            right: 15px;
-            color: var(--accent-color);
+        .fm-box-content {
+            padding: 15px;
         }
 
-        .pixel-btn-back {
-            background: #333;
-            border: 2px solid #555;
-            color: #999;
+        /* Position Selection Cards */
+        .pos-card {
+            background: #373745;
+            border: 1px solid #4b5563;
             padding: 12px;
-            text-align: center;
-            font-size: 14px;
+            margin-bottom: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            flex: 1;
+            display: flex;
+            align-items: center;
+            transition: 0.15s;
         }
-        .pixel-btn-confirm {
-            background: #1e3a8a;
-            border: 2px solid #3b82f6;
+        .pos-card:hover, .pos-card.active {
+            background: #4b5563;
+            border-color: var(--fm-green);
+        }
+        .pos-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: #1f2937;
             color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            border: 2px solid #555;
+        }
+        /* Pos Colors */
+        .pos-fw { border-color: #ef4444; color: #ef4444; }
+        .pos-mf { border-color: #3b82f6; color: #3b82f6; }
+        .pos-df { border-color: #10b981; color: #10b981; }
+        .pos-mgr { border-color: #f59e0b; color: #f59e0b; }
+        
+        .pos-info h4 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .pos-info p { font-size: 12px; color: #9ca3af; }
+
+        /* Buttons (Action) */
+        .fm-btn {
+            display: block;
+            width: 100%;
+            background: #373745;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 12px;
+            text-align: left;
+            font-size: 15px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .fm-btn:hover, .fm-btn.active {
+            background: #4b5563;
+            border-color: var(--fm-green);
+            color: #fff;
+        }
+        .fm-btn-back {
+            background: transparent;
+            color: #9ca3af;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        .fm-btn-confirm {
+            background: var(--fm-red);
+            color: #fff;
+            font-weight: 700;
             padding: 12px;
             text-align: center;
-            font-size: 16px;
-            cursor: pointer;
-            flex: 2;
+            border-radius: 4px;
+            border: none;
+            box-shadow: 0 2px 0 #991b1b;
         }
+        .fm-btn-confirm:active { transform: translateY(2px); box-shadow: none; }
 
         /* Inputs */
-        .pixel-input {
+        .fm-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+        .fm-input {
             width: 100%;
-            background: #000;
-            border: 2px solid #666;
+            background: #1f1f24;
+            border: 1px solid #444;
             color: #fff;
             padding: 12px;
-            font-family: 'NeoDungGeunMo';
-            font-size: 18px;
-            outline: none;
-            text-align: center;
-            margin-bottom: 8px;
-            border-radius: 0;
-        }
-        .pixel-input:focus {
-            border-color: var(--accent-color);
-        }
-        .pixel-input::placeholder {
-            color: var(--placeholder-color);
-            font-style: italic;
-            font-size: 14px;
-            opacity: 0.7;
-        }
-        .input-label {
-            display: block;
-            color: var(--accent-color);
-            font-size: 14px;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-
-        /* Dialogue Box */
-        .dialogue-box {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            height: 120px;
-            background-color: var(--window-bg);
-            border: 4px double var(--border-color);
-            padding: 16px;
-            z-index: 50;
-            display: none;
-        }
-        .npc-nametag {
-            position: absolute;
-            top: -14px;
-            left: 16px;
-            background: var(--accent-color);
-            color: #000;
-            padding: 2px 10px;
-            font-size: 12px;
-            font-weight: bold;
-            border: 2px solid #fff;
-        }
-        .dialogue-text {
             font-size: 16px;
-            line-height: 1.5;
-            margin-top: 5px;
-        }
-
-        /* Character Cards */
-        .char-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 50vh; /* Adjust for mobile */
-            overflow-y: auto;
-        }
-        .char-card {
-            background: #2d3748;
-            border: 2px solid #4a5568;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
+            border-radius: 4px;
+            outline: none;
             transition: 0.2s;
         }
-        .char-card:hover, .char-card.selected {
-            border-color: var(--accent-color);
-            background: #1a202c;
-        }
-        .char-thumb {
-            width: 48px;
-            height: 48px;
-            margin-right: 12px;
-            border: 2px solid #fff;
-            background: #4a5568;
-            padding: 2px;
-            image-rendering: pixelated;
-        }
-        .char-info { flex: 1; }
-        .char-info h4 { color: var(--accent-color); font-size: 16px; margin-bottom: 2px; font-weight: bold; }
-        .char-info p { color: #ccc; font-size: 12px; line-height: 1.3; }
+        .fm-input:focus { border-color: var(--fm-accent); background: #25252b; }
+        .fm-input::placeholder { color: #555; font-style: italic; }
 
-        /* Animations */
-        @keyframes blink { 50% { opacity: 0; } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #555; }
-        
-        /* Utility */
-        .text-accent { color: var(--accent-color); }
-        .hidden { display: none !important; }
-        .center-content { justify-content: center; }
-
-        /* Loading */
-        .loading-screen {
+        /* Message Box (Reduced Size) */
+        .message-box {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px; /* Reduced from 120px */
+            background: rgba(30, 30, 36, 0.95);
+            border-top: 1px solid #444;
+            padding: 10px 16px;
+            z-index: 50;
+            display: flex;
             align-items: center;
+            backdrop-filter: blur(5px);
         }
+        .msg-avatar {
+            width: 40px; height: 40px;
+            background: #555;
+            border-radius: 50%;
+            margin-right: 12px;
+            overflow: hidden;
+            border: 2px solid #777;
+            flex-shrink: 0;
+        }
+        .msg-content { flex: 1; }
+        .msg-name { font-size: 11px; font-weight: 700; color: var(--fm-green); margin-bottom: 2px; text-transform: uppercase; }
+        .msg-text { font-size: 13px; line-height: 1.3; color: #e2e8f0; }
+        .blink-cursor {
+            display: inline-block; width: 6px; height: 12px; background: var(--fm-green);
+            animation: blink 0.8s infinite; margin-left: 4px; vertical-align: middle;
+        }
+
+        /* Result Styles */
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .res-photo {
+            width: 60px; height: 60px;
+            background: #ccc;
+            margin-right: 15px;
+            border: 1px solid #fff;
+        }
+        .res-info h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+        .res-info p { font-size: 13px; color: var(--fm-green); font-weight: 600; text-transform: uppercase; }
+        
+        .stat-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+        .stat-table td { padding: 6px 0; border-bottom: 1px solid #333; }
+        .stat-label { color: #9ca3af; }
+        .stat-val { text-align: right; font-weight: 700; color: #fff; }
+        
+        .val-box {
+            background: #374151;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 15px 0;
+            border-left: 4px solid var(--fm-gold);
+        }
+        .val-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .val-amount { font-size: 28px; font-weight: 800; color: #fff; }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="game-frame">
+<div class="fm-frame">
     
-    <!-- HUD -->
-    <div class="hud">
-        <div class="text-center">
-            <span class="hud-label">STAGE</span>
-            <span id="levelDisplay">TITLE</span>
+    <!-- Header -->
+    <div class="fm-header">
+        <div class="header-title">
+            <i class="ph-fill ph-soccer-ball text-xl text-white"></i> MANAGER OF SALES
         </div>
-        <div class="text-center">
-            <span class="hud-label">PLAYERS</span>
-            <span id="userCount">0</span>
-        </div>
-        <div class="text-center">
-            <span class="hud-label">HP</span>
-            <span class="text-red-500">❤️❤️❤️</span>
-        </div>
+        <div class="header-date" id="currentDate">2026.01.05</div>
     </div>
 
     <!-- Scene -->
     <div class="scene center-content" id="main-scene">
         
-        <!-- Intro Screen -->
-        <div id="intro-screen" class="title-screen">
-            <div class="mb-6 text-6xl">🏰</div>
-            <h1 class="title-main">LEGEND OF<br>SALES</h1>
-            <div class="title-sub">전설의 영업자</div>
-            <div class="mt-8"></div>
-            <div class="press-start" onclick="goToCharSelect()">▶ PRESS START ◀</div>
+        <!-- Intro -->
+        <div id="intro-screen" class="intro-screen">
+            <div class="mb-6 flex justify-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center border-4 border-gray-600 shadow-xl">
+                    <i class="ph-duotone ph-trophy text-4xl text-yellow-400"></i>
+                </div>
+            </div>
+            <h1 class="intro-logo">SCOUTING<br>REPORT</h1>
+            <p class="intro-sub">YOUR MARKET VALUE ANALYSIS</p>
+            
+            <div class="bg-gray-800/50 p-4 rounded-lg mb-8 text-xs text-gray-400 max-w-xs mx-auto border border-gray-700">
+                실제 이적 시장 데이터를 기반으로<br>귀하의 잠재적 가치(이적료)를 산출합니다.
+            </div>
+
+            <button class="start-btn" onclick="goToStep(0)">
+                분석 시작하기
+            </button>
         </div>
 
-        <!-- NPC / Character Area (Only visible on Intro/CharSelect/Result) -->
-        <div class="npc-container hidden" id="npc-display-area">
-            <div class="npc-frame">
-                <div class="npc-bg">
-                    <img id="main-char-img" src="" alt="Character" class="npc-img">
+        <!-- 1. Position Select (Job) -->
+        <div id="step-position" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header">
+                    <span>Select Position</span>
+                    <span class="text-xs text-gray-500">1/10</span>
+                </div>
+                <div class="fm-box-content p-2">
+                    <!-- Injected via JS -->
+                    <div id="pos-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Menus -->
+        <!-- 2. Rank (Squad Status) -->
+        <div id="step-rank" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Current Status (직급)</span> <span>2/10</span></div>
+                <div class="fm-box-content">
+                    <div id="rank-options"></div>
+                </div>
+            </div>
+            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
+        </div>
         
-        <!-- 1. Character Select -->
-        <div id="char-select-menu" class="menu-wrapper">
-            <div class="rpg-box">
-                <p class="text-center text-accent mb-4 border-b border-gray-600 pb-2">직업 선택 (CLASS SELECT)</p>
-                <div id="char-list" class="char-grid"></div>
+        <!-- 3. Team Size (Staff) -->
+        <div id="step-team" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Staff Management (조직)</span> <span>3/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">본인 산하 조직원 수 (명)</label>
+                    <input type="number" id="team_size" class="fm-input" placeholder="0">
+                    <p class="text-xs text-gray-500 mt-2" id="team-hint">
+                        * 팀원: 0명 / 팀장: 1~5명 / 지점장: 6~20명 / 본부장: 21명+
+                    </p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('team')">확인</button>
             </div>
         </div>
 
-        <!-- 2. Choice Menu -->
-        <div id="choice-menu" class="menu-wrapper">
-            <!-- Questions Title is displayed via Dialogue Box or here? 
-                 Let's put a simple header in the box -->
-            <div class="rpg-box mb-2 text-center border-gray-600 border-b-0 pb-0">
-                 <h2 class="text-lg text-accent mb-1" id="q-choice-title">Question</h2>
-                 <p class="text-xs text-gray-400" id="q-choice-desc">...</p>
+        <!-- 4. Career (Experience) -->
+        <div id="step-career" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Experience (경력)</span> <span>4/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">총 영업 경력 (년)</label>
+                    <input type="number" id="career" class="fm-input" placeholder="예: 3">
+                </div>
             </div>
-            <div id="choice-buttons-container" class="flex flex-col gap-2"></div>
-            <button class="pixel-btn-back w-full mt-2" onclick="prevStep()">뒤로 가기</button>
-        </div>
-
-        <!-- 3. Input Menu -->
-        <div id="input-menu" class="menu-wrapper">
-            <div class="rpg-box">
-                 <h2 class="text-lg text-accent mb-2 text-center" id="q-input-title">Input</h2>
-                 <p class="text-xs text-gray-400 mb-4 text-center" id="q-input-desc">...</p>
-                <div id="input-fields" class="flex flex-col gap-4"></div>
-            </div>
-            <div class="flex gap-2 mt-4">
-                <button class="pixel-btn-back" onclick="prevStep()">뒤로</button>
-                <button class="pixel-btn-confirm" onclick="submitInput()">확인 ▶</button>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('career')">확인</button>
             </div>
         </div>
 
-        <!-- 4. Result Menu -->
-        <div id="result-menu" class="menu-wrapper" style="max-width: 95%;">
-            <div class="rpg-box" style="max-height: 60vh; overflow-y: auto;">
-                <div class="text-center border-b border-gray-600 pb-4 mb-4">
-                    <h2 class="text-2xl text-accent mb-1">평가 리포트</h2>
-                    <p class="text-xs text-gray-500">STATUS REPORT</p>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="flex items-center bg-gray-800 p-3 mb-4 border border-gray-600">
-                    <div class="mr-4 border border-white">
-                         <img id="result-char-img" src="" class="w-16 h-16 bg-gray-700 block image-pixelated">
-                    </div>
-                    <div class="flex-1 text-sm">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-gray-400">이름</span>
-                            <span class="text-white" id="resName">---</span>
-                        </div>
-                        <div class="flex justify-between mb-1">
-                            <span class="text-gray-400">직업</span>
-                            <span class="text-accent" id="resCharClass">---</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">직급</span>
-                            <span class="text-white" id="resRank">---</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Score -->
-                <div class="text-center p-4 bg-gray-800 border border-gray-600 mb-4">
-                    <p class="text-xs text-accent mb-1">추정 이적료 (BOUNTY)</p>
-                    <div class="text-3xl text-white mb-1">
-                        <span id="finalPrice">0</span> <span class="text-lg text-gray-400">만원</span>
-                    </div>
-                    <p class="text-xs text-gray-500">(연봉 대비 <span id="finalPct" class="text-white">0</span>% 가치)</p>
-                </div>
-
-                <!-- Rank -->
-                <div class="bg-gray-900 p-2 text-center text-xs mb-4 border border-gray-700">
-                    <span class="text-gray-400">전체 랭킹:</span> 상위 <span class="text-accent font-bold" id="rankingPercent">0</span>%
-                </div>
-
-                <!-- Stats -->
-                <div class="text-sm mb-4 space-y-2 border-t border-gray-600 pt-3">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">⚔️ 생산성</span>
-                        <span class="text-white" id="resProd">---</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">🛡️ 건전성</span>
-                        <span class="text-white" id="resQual">---</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">⚡ 활동성</span>
-                        <span class="text-white" id="resAct">---</span>
-                    </div>
-                </div>
-
-                <!-- Advice -->
-                <div class="text-sm bg-gray-800 p-3 border-l-4 border-accent text-gray-300 leading-relaxed">
-                    <strong class="block text-accent mb-1">이장님의 조언</strong>
-                    <span id="aiAdvice">...</span>
+        <!-- 5. Income (Wage) -->
+        <div id="step-income" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Previous Wage (연봉)</span> <span>5/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">직전연도 원천징수 금액 (만원)</label>
+                    <input type="number" id="income" class="fm-input" placeholder="예: 6000">
+                    <p class="text-xs text-gray-500 mt-2">* 세전 기준, 보너스 포함</p>
                 </div>
             </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('income')">확인</button>
+            </div>
+        </div>
 
-            <div class="flex gap-2 mt-2">
-                <button class="pixel-btn text-center" style="padding:10px; border-color:white;" onclick="shareLink()">결과 저장</button>
-                <button class="pixel-btn text-center" style="padding:10px; border-color:white;" onclick="location.reload()">처음으로</button>
+        <!-- 6. Transfer History -->
+        <div id="step-history" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Transfer History (이적)</span> <span>6/10</span></div>
+                <div class="fm-box-content">
+                    <p class="text-xs text-red-500 font-bold mb-3">⚠ 최근 3년 이내 이직 횟수</p>
+                    <div id="history-options"></div>
+                </div>
+            </div>
+            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
+        </div>
+
+        <!-- 7. Performance (Stats) -->
+        <div id="step-perf" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Season Stats (실적)</span> <span>7/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">월 평균 건수</label>
+                    <input type="number" id="count" class="fm-input mb-4" placeholder="예: 4.5">
+                    
+                    <label class="fm-label">월 평균 환산/초회 보험료 (만원)</label>
+                    <input type="number" id="premium" class="fm-input" placeholder="예: 50">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('perf')">확인</button>
+            </div>
+        </div>
+
+        <!-- 8. Quality (Persistency) -->
+        <div id="step-qual" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Consistency (유지율)</span> <span>8/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">13회차 유지율 (%)</label>
+                    <input type="number" id="p13" class="fm-input mb-4" placeholder="예: 95">
+                    
+                    <label class="fm-label">25회차 유지율 (%)</label>
+                    <input type="number" id="p25" class="fm-input" placeholder="예: 85">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('qual')">확인</button>
+            </div>
+        </div>
+
+        <!-- 9. Info -->
+        <div id="step-info" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Personal Details</span> <span>9/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">이름 (실명)</label>
+                    <input type="text" id="userName" class="fm-input mb-4" placeholder="홍길동">
+                    
+                    <label class="fm-label">출생연도</label>
+                    <input type="number" id="birthYear" class="fm-input mb-4" placeholder="1990">
+                    
+                    <label class="fm-label">활동 지역</label>
+                    <input type="text" id="region" class="fm-input" placeholder="서울 강남">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" onclick="submitInput('info')">확인</button>
+            </div>
+        </div>
+
+        <!-- 10. Contact -->
+        <div id="step-contact" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Contact Info</span> <span>10/10</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label">연락처</label>
+                    <div class="flex gap-2">
+                        <input type="text" value="010" readonly class="fm-input w-1/4 text-gray-500 bg-gray-800 text-center">
+                        <input type="tel" id="p_mid" class="fm-input w-1/3 text-center" maxlength="4" placeholder="1234">
+                        <input type="tel" id="p_end" class="fm-input w-1/3 text-center" maxlength="4" placeholder="5678">
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
+                <button class="fm-btn-confirm flex-1" style="background:#10b981;" onclick="submitInput('contact')">리포트 생성</button>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="step-result" class="menu-wrapper" style="max-width: 95%;">
+            <div class="fm-box">
+                <div class="fm-box-header">
+                    <span>SCOUTING REPORT</span>
+                    <span class="text-xs font-normal text-gray-400" id="res-date">2026.01.05</span>
+                </div>
+                <div class="fm-box-content">
+                    
+                    <div class="result-header">
+                        <!-- DiceBear Initials or Avataaars -->
+                        <img id="res-img" src="" class="res-photo object-cover rounded">
+                        <div class="res-info">
+                            <h2 id="res-name">NAME</h2>
+                            <p id="res-role">POSITION</p>
+                            <span class="text-xs text-gray-400" id="res-rank-txt">RANK</span>
+                        </div>
+                    </div>
+
+                    <div class="val-box">
+                        <p class="val-label">ESTIMATED TRANSFER FEE (이적료)</p>
+                        <div class="val-amount">
+                            <span id="finalPrice">0</span> <span class="text-lg font-normal text-gray-400">만원</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">연봉 대비 <span id="finalPct" class="text-green-500 font-bold">0</span>% 가치</p>
+                    </div>
+
+                    <table class="stat-table mb-4">
+                        <tr>
+                            <td class="stat-label">Potential (잠재력)</td>
+                            <td class="stat-val text-yellow-400">⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td class="stat-label">Productivity (생산성)</td>
+                            <td class="stat-val" id="res-prod">A</td>
+                        </tr>
+                        <tr>
+                            <td class="stat-label">Consistency (유지율)</td>
+                            <td class="stat-val" id="res-qual">A</td>
+                        </tr>
+                        <tr>
+                            <td class="stat-label">Ranking (순위)</td>
+                            <td class="stat-val text-blue-400">Top <span id="res-ranking">0</span>%</td>
+                        </tr>
+                    </table>
+
+                    <div class="bg-gray-800 p-3 rounded text-xs leading-relaxed text-gray-300 border-l-2 border-purple-500">
+                        <strong class="block text-purple-400 mb-1">SCOUT OPINION</strong>
+                        <span id="aiAdvice">...</span>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button class="fm-btn text-center text-sm" onclick="location.reload()">새로고침</button>
+                <button class="fm-btn text-center text-sm bg-blue-600 border-blue-500" onclick="alert('복사되었습니다.')">리포트 공유</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Dialogue Box -->
-    <div class="dialogue-box" id="main-dialogue">
-        <div class="npc-nametag" id="npc-name">이장님</div>
-        <p class="dialogue-text" id="npc-text"></p>
-        <span class="text-accent absolute bottom-4 right-4 animate-bounce">▼</span>
-    </div>
-
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="text-center">
-            <h2 class="text-2xl text-accent mb-4 animate-pulse">분석 중...</h2>
-            <div class="w-48 h-4 border-2 border-white p-1">
-                <div id="loading-bar" class="h-full bg-accent-color w-0 transition-all duration-100" style="background-color:var(--accent-color);"></div>
-            </div>
+    <!-- Manager Message Box (Reduced Height) -->
+    <div class="message-box" id="msg-box" style="display:none;">
+        <div class="msg-avatar">
+            <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Manager&clothing=blazerAndShirt&accessories=glasses" class="w-full h-full">
+        </div>
+        <div class="msg-content">
+            <div class="msg-name">Chief Scout</div>
+            <div class="msg-text" id="npc-text"></div>
         </div>
     </div>
 
@@ -521,345 +603,249 @@
 
 <script>
     // --- Data ---
-    const characters = [
-        { id: 'knight', name: '기사', desc: '루틴형 영업자 (성실함)', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Arthur&clothing=plate&skinColor=ecad80' },
-        { id: 'barbarian', name: '바바리안', desc: '클로징 마스터 (돌파력)', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Conan&clothing=layer&skinColor=ecad80' },
-        { id: 'archer', name: '궁수', desc: 'TA 고수 (비대면 영업)', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Robin&clothing=jacket&hat=hat&skinColor=f2d3b1' },
-        { id: 'wizard', name: '마법사', desc: '조직 리더 (전략가)', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Merlin&clothing=robe&skinColor=f2d3b1' },
-        { id: 'fairy', name: '요정', desc: '영업 서포터 (치유/관리)', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Tinker&clothing=collarAndSweater&skinColor=f2d3b1' }
+    const positions = [
+        { id: 'mf', name: '미드필더 (MF)', desc: '꾸준한 세일즈맨 - 기초가 탄탄한 영업자', icon: 'M', color: 'pos-mf' },
+        { id: 'fw', name: '스트라이커 (FW)', desc: '클로징 마스터 - 골 결정력이 좋음', icon: 'S', color: 'pos-fw' },
+        { id: 'df', name: '수비수 (DF)', desc: 'TA 고수 - 연결을 잘해줌', icon: 'D', color: 'pos-df' },
+        { id: 'mgr', name: '감독 (Manager)', desc: '훌륭한 조직 매니저', icon: 'M', color: 'pos-mgr' },
+        { id: 'coach', name: '코칭스태프 (Coach)', desc: '리더의 훌륭한 조력자', icon: 'C', color: 'pos-mgr' }
     ];
 
-    let currentStep = 0;
+    const ranks = [
+        { l: '팀원 (FA/FC)', v: 'member' },
+        { l: '팀장 (SM/FM)', v: 'team_leader' },
+        { l: '지점장 (BM)', v: 'branch_manager' },
+        { l: '본부장/임원', v: 'director' }
+    ];
+
+    const historyOpts = [
+        { l: '이직 없음 (Stable)', v: 0 },
+        { l: '1회 (Normal)', v: 1 },
+        { l: '2회 (Frequent)', v: 2 },
+        { l: '3회 이상 (High Risk)', v: 3 }
+    ];
+
     let userData = {};
-    let steps = []; 
-    let visitorCount = parseInt(localStorage.getItem('fa_retro_users') || '342');
+    let currentStep = -1; // -1: Intro
 
     // --- Init ---
-    window.onload = () => {
-        visitorCount += Math.floor(Math.random() * 5);
-        localStorage.setItem('fa_retro_users', visitorCount);
-        document.getElementById('userCount').innerText = visitorCount;
+    window.onload = function() {
+        const today = new Date();
+        document.getElementById('currentDate').innerText = `${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
     };
 
     // --- Core Functions ---
-    function typeText(text, callback) {
-        const dialogBox = document.getElementById('main-dialogue');
-        const textBox = document.getElementById('npc-text');
-        
-        dialogBox.style.display = 'block';
-        textBox.innerHTML = ''; 
+    function typeText(text) {
+        const el = document.getElementById('npc-text');
+        el.innerHTML = '';
         let i = 0;
-        const speed = 20; 
-        
         function type() {
             if (i < text.length) {
-                textBox.innerHTML += text.charAt(i);
+                el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, speed);
+                setTimeout(type, 15);
             } else {
-                if (callback) callback();
+                el.innerHTML += '<span class="blink-cursor"></span>';
             }
         }
         type();
     }
 
-    const menuIds = ['intro-screen', 'char-select-menu', 'choice-menu', 'input-menu', 'result-menu'];
-    function showMenu(id) {
-        // Toggle scene alignment
+    function showStepScreen(stepId) {
+        // Hide all steps
+        document.querySelectorAll('.menu-wrapper').forEach(el => el.classList.remove('active'));
+        document.getElementById('intro-screen').style.display = 'none';
         const scene = document.getElementById('main-scene');
+        scene.classList.remove('center-content');
         
-        menuIds.forEach(mId => {
-            const el = document.getElementById(mId);
-            if(el) {
-                el.classList.remove('active');
-                if(mId !== 'intro-screen') el.classList.add('hidden'); // Ensure non-intro items are hidden class
-                if(mId === 'intro-screen') el.style.display = 'none'; // Intro uses inline style
+        // Show target
+        if(stepId) {
+            document.getElementById(stepId).classList.add('active');
+            
+            // Show Msg Box
+            document.getElementById('msg-box').style.display = 'flex';
+            
+            // Update Message based on step
+            let msg = "";
+            switch(stepId) {
+                case 'step-position': msg = "자신의 성향과 가장 잘 맞는 포지션을 선택하세요."; scene.classList.add('center-content'); break;
+                case 'step-rank': msg = "현재 소속된 팀에서의 직급은 무엇입니까?"; break;
+                case 'step-team': msg = "본인이 직접 관리하는 산하 조직원 수를 정확히 입력하세요."; break;
+                case 'step-career': msg = "총 영업 경력(개월/년)을 입력해주세요."; break;
+                case 'step-income': msg = "중요합니다. 작년 원천징수 영수증 기준 연봉은 얼마인가요?"; break;
+                case 'step-history': msg = "최근 3년 이내 이직 횟수를 솔직하게 선택해주세요."; break;
+                case 'step-perf': msg = "월 평균 실적(건수, 보험료)을 입력하세요."; break;
+                case 'step-qual': msg = "계약 건전성 지표(유지율)를 확인합니다."; break;
+                case 'step-info': msg = "리포트 발급을 위한 기본 정보를 입력해주세요."; break;
+                case 'step-contact': msg = "결과를 받아볼 연락처를 입력하세요."; break;
+                case 'step-result': 
+                    document.getElementById('msg-box').style.display = 'none'; 
+                    scene.classList.add('center-content');
+                    break;
             }
-        });
-
-        if(id === 'intro-screen') {
-             document.getElementById('intro-screen').style.display = 'flex';
-             scene.classList.add('center-content');
-        } else if (id) {
-             const menu = document.getElementById(id);
-             menu.classList.remove('hidden');
-             menu.classList.add('active');
-             
-             // If input/choice, move content to top for mobile keyboard space
-             if (id === 'input-menu' || id === 'choice-menu') {
-                 scene.classList.remove('center-content');
-             } else {
-                 scene.classList.add('center-content');
-             }
+            if(msg) typeText(msg);
         }
     }
 
-    // --- Game Logic ---
-    function goToCharSelect() {
-        document.getElementById('intro-screen').style.display = 'none';
+    // --- Logic ---
+    function goToStep(stepIdx) {
+        currentStep = stepIdx;
+        const stepIds = ['step-position', 'step-rank', 'step-team', 'step-career', 'step-income', 'step-history', 'step-perf', 'step-qual', 'step-info', 'step-contact', 'step-result'];
         
-        // NPC: Village Elder
-        document.getElementById('npc-display-area').classList.remove('hidden');
-        document.getElementById('main-char-img').src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Elder&clothing=robe&skinColor=f2d3b1";
-        document.getElementById('npc-name').innerText = "이장님";
-
-        typeText("자네의 영업 성향과 가장 비슷한 직업을 골라보게나.", () => {
-            const list = document.getElementById('char-list');
+        // Render dynamic content if needed
+        if (stepIdx === 0) { // Position
+            const list = document.getElementById('pos-list');
             list.innerHTML = '';
-            characters.forEach(char => {
-                const card = document.createElement('div');
-                card.className = 'char-card';
-                card.innerHTML = `
-                    <img src="${char.img}" class="char-thumb">
-                    <div class="char-info">
-                        <h4>${char.name}</h4>
-                        <p>${char.desc}</p>
+            positions.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'pos-card';
+                el.innerHTML = `
+                    <div class="pos-icon ${p.color}">${p.icon}</div>
+                    <div class="pos-info">
+                        <h4>${p.name}</h4>
+                        <p>${p.desc}</p>
                     </div>
                 `;
-                card.onclick = () => selectCharacter(char);
-                list.appendChild(card);
-            });
-            showMenu('char-select-menu');
-        });
-    }
-
-    function selectCharacter(char) {
-        userData['character'] = char;
-        // Start game loop, hide char display
-        document.getElementById('npc-display-area').classList.add('hidden');
-        startGame();
-    }
-
-    // Steps
-    const baseSteps = [
-        { type: 'choice', key:'affiliation', title:'소속 확인', desc:'현재 소속된 월드는 어디입니까?', options:[{l:'GA (법인대리점)',v:'ga'},{l:'원수사 (생명)',v:'life'},{l:'원수사 (손해)',v:'nonlife'}] },
-        { type: 'choice', key:'rank', title:'직급 확인', desc:'자네의 현재 레벨(직급)은?', options:[{l:'팀원 (FA/FC)',v:'member'},{l:'팀장 (SM/FM)',v:'team_leader'},{l:'지점장 (BM)',v:'branch_manager'},{l:'본부장/임원',v:'director'}] },
-        { type: 'input', key:'team_size', title:'파티 규모', desc:'이끄는 동료(조직원)는 몇 명인가요?', inputs:[{id:'team_size', p:'0', type:'number', label:'조직원 수'}] },
-        { type: 'input', key:'career_income', title:'전투 기록', desc:'경력과 전리품(연봉)을 입력하세요.', inputs:[{id:'career', p:'3', type:'number', label:'경력 (년)'}, {id:'income', p:'5000', type:'number', label:'연봉 (만원)'}] },
-        { type: 'choice', key:'job_hop', title:'이동 이력', desc:'최근 3년 내 길드 이동 횟수?', options:[{l:'없음',v:0},{l:'1회',v:1},{l:'2회',v:2},{l:'3회 이상',v:3}] },
-        { type: 'choice', key:'w_score', title:'연속 청약 (W)', desc:'꾸준함의 지표! W 기록이 있나요?', options:[{l:'없음',v:0},{l:'1W (10주↑)',v:0.03},{l:'1W (20주↑)',v:0.05},{l:'2W (50주↑)',v:0.10},{l:'3W (50주↑)',v:0.15}] },
-        { type: 'input', key:'productivity', title:'평균 공격력', desc:'월 평균 실적을 입력하세요.', inputs:[{id:'count', p:'4.5', label:'월 건수'}, {id:'premium', p:'50', label:'월 보험료 (만원)'}] },
-        { type: 'choice', key:'sales_style', title:'전투 스타일', desc:'주로 어떤 방식으로 영업하나요?', options:[{l:'개척 (맨땅)',v:0.1},{l:'지인/소개',v:0.05},{l:'DB 영업',v:-0.05}] },
-        { type: 'choice', key:'portfolio', title:'주 무기', desc:'가장 자신있는 상품군은?', options:[{l:'보장성 (암/종신)',v:0.1},{l:'저축성 (연금)',v:0},{l:'자동차/화재',v:-0.05},{l:'복합 (기타)',v:0}] },
-        { type: 'input', key:'persistency', title:'방어력 (유지율)', desc:'13회차/25회차 유지율을 입력하세요.', inputs:[{id:'per13', p:'90', label:'13회차 (%)'}, {id:'per25', p:'80', label:'25회차 (%)'}] },
-        { type: 'choice', key:'mdrt', title:'명예의 전당', desc:'MDRT 달성 경험이 있나요?', options:[{l:'없음',v:0},{l:'MDRT',v:0.1},{l:'COT',v:0.15},{l:'TOT',v:0.2}] },
-        // Satisfaction
-        { type: 'choice', key:'satisfaction', title:'길드 만족도', desc:'현재 조직에 만족하시나요?', options:[{l:'매우 만족',v:'very_sat'},{l:'대체로 만족',v:'sat'},{l:'보통',v:'avg'},{l:'불만족',v:'unsat'},{l:'매우 불만족',v:'very_unsat'}] },
-        // Personal
-        { type: 'input', key:'personal', title:'모험가 등록', desc:'기본 정보를 입력해주세요.', inputs:[{id:'userName', p:'홍길동', label:'이름'}, {id:'birthYear', p:'1990', type:'number', label:'출생년도'}, {id:'region', p:'서울', label:'지역'}] },
-        { type: 'gender', key:'gender', title:'성별', desc:'성별을 선택해주세요.' },
-        { type: 'phone', key:'phone', title:'비둘기 전송', desc:'연락처를 입력해주세요. (결과 확인용)' }
-    ];
-
-    function startGame() {
-        steps = [...baseSteps];
-        currentStep = 0;
-        processStep();
-    }
-
-    function processStep() {
-        document.getElementById('levelDisplay').innerText = currentStep + 1;
-        
-        if(currentStep >= steps.length) {
-            finishGame(); return;
-        }
-
-        const step = steps[currentStep];
-        
-        // Use Dialogue Box for Question Description context
-        typeText(step.desc, () => {
-            renderStep(step);
-        });
-    }
-
-    function renderStep(step) {
-        if(step.type === 'choice') {
-            document.getElementById('q-choice-title').innerText = step.title;
-            document.getElementById('q-choice-desc').innerText = ""; // Desc is in dialog box now
-            
-            const container = document.getElementById('choice-buttons-container');
-            container.innerHTML = '';
-            step.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'pixel-btn';
-                btn.innerText = opt.l;
-                btn.onclick = () => {
-                    userData[step.key] = opt.v;
-                    if(step.key === 'satisfaction') handleSatisfaction(opt.v);
+                el.onclick = () => {
+                    userData['position'] = p;
                     nextStep();
                 };
-                container.appendChild(btn);
+                list.appendChild(el);
             });
-            showMenu('choice-menu');
-        } 
-        else if (step.type === 'gender') {
-            document.getElementById('q-choice-title').innerText = step.title;
-            document.getElementById('q-choice-desc').innerText = "";
-            const container = document.getElementById('choice-buttons-container');
-            container.innerHTML = '';
-            
-             ['남성', '여성'].forEach(g => {
+        }
+        else if (stepIdx === 1) { // Rank
+            const list = document.getElementById('rank-options');
+            list.innerHTML = '';
+            ranks.forEach(r => {
                 const btn = document.createElement('button');
-                btn.className = 'pixel-btn text-center';
-                btn.innerText = g;
+                btn.className = 'fm-btn';
+                btn.innerText = r.l;
                 btn.onclick = () => {
-                    userData['gender'] = g === '남성' ? 'M' : 'F';
+                    userData['rank'] = r.v;
                     nextStep();
                 };
-                container.appendChild(btn);
-            });
-            showMenu('choice-menu');
-        }
-        else {
-            document.getElementById('q-input-title').innerText = step.title;
-            document.getElementById('q-input-desc').innerText = "";
-            const container = document.getElementById('input-fields');
-            container.innerHTML = '';
-            
-            if(step.type === 'phone') {
-                container.innerHTML = `
-                    <label class="input-label">연락처</label>
-                    <div class="flex gap-2">
-                        <input type="text" value="010" readonly class="pixel-input w-1/4 text-gray-500 border-gray-600" style="background:#222;">
-                        <input type="tel" id="p_mid" class="pixel-input w-1/3" maxlength="4" placeholder="1234">
-                        <input type="tel" id="p_end" class="pixel-input w-1/3" maxlength="4" placeholder="5678">
-                    </div>`;
-            } else {
-                step.inputs.forEach(inp => {
-                    const label = document.createElement('label');
-                    label.className = 'input-label';
-                    label.innerText = inp.label;
-                    container.appendChild(label);
-                    
-                    const input = document.createElement('input');
-                    input.id = inp.id; input.type = inp.type || 'text';
-                    input.className = 'pixel-input';
-                    input.placeholder = inp.p;
-                    if(userData[inp.id]) input.value = userData[inp.id];
-                    container.appendChild(input);
-                });
-            }
-            showMenu('input-menu');
-        }
-    }
-
-    function handleSatisfaction(val) {
-        let idx = currentStep + 1;
-        while(steps.length > idx && steps[idx].isDynamic) steps.splice(idx, 1);
-        
-        const pros = [ {l:"DB 공급", v:"db"}, {l:"시스템", v:"sys"}, {l:"수수료", v:"pay"}, {l:"기타", v:"etc"} ];
-        const cons = [ {l:"DB 부족", v:"db_lack"}, {l:"시스템", v:"sys"}, {l:"수수료", v:"pay"}, {l:"기타", v:"etc"} ];
-        
-        let newStep = { type: 'choice', isDynamic: true, options: [], title: "상세 이유", desc:"" };
-        
-        if (val === 'very_sat' || val === 'sat') {
-            newStep.desc = "오호! 어떤 점이 훌륭한가?";
-            newStep.options = pros.map(p => ({...p, key:'reason'}));
-        } else if (val === 'very_unsat' || val === 'unsat') {
-            newStep.desc = "저런... 무엇이 문제인가?";
-            newStep.options = cons.map(c => ({...c, key:'reason'}));
-        } else {
-            newStep.desc = "가장 아쉬운 점은 무엇인가?";
-            newStep.options = cons.map(c => ({...c, key:'reason'}));
-        }
-        steps.splice(idx, 0, newStep);
-    }
-
-    function submitInput() {
-        const step = steps[currentStep];
-        let valid = true;
-
-        if(step.type === 'phone') {
-            const m = document.getElementById('p_mid').value;
-            const e = document.getElementById('p_end').value;
-            if(m.length < 4 || e.length < 4) { alert('연락처를 확인해주세요.'); return; }
-            userData['phone'] = `010-${m}-${e}`;
-        } else {
-            step.inputs.forEach(inp => {
-                const el = document.getElementById(inp.id);
-                if(!el.value) { el.style.borderColor = "red"; valid=false; }
-                else userData[inp.id] = el.value;
+                list.appendChild(btn);
             });
         }
-        if(valid) nextStep();
+        else if (stepIdx === 5) { // History
+            const list = document.getElementById('history-options');
+            list.innerHTML = '';
+            historyOpts.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = 'fm-btn';
+                btn.innerText = h.l;
+                btn.onclick = () => {
+                    userData['job_hop'] = h.v;
+                    nextStep();
+                };
+                list.appendChild(btn);
+            });
+        }
+
+        showStepScreen(stepIds[stepIdx]);
     }
 
     function nextStep() {
-        currentStep++;
-        processStep();
+        goToStep(currentStep + 1);
     }
 
     function prevStep() {
-        if (currentStep > 0) {
-            currentStep--;
-            processStep();
-        } else {
-            // Back to char select
-            showMenu('null'); // clear
-            goToCharSelect();
+        if(currentStep > 0) goToStep(currentStep - 1);
+        else location.reload();
+    }
+
+    function submitInput(type) {
+        let valid = true;
+        if(type === 'team') {
+            const v = document.getElementById('team_size').value;
+            if(!v) valid=false; else userData['team_size'] = parseInt(v);
         }
+        else if(type === 'career') {
+            const v = document.getElementById('career').value;
+            if(!v) valid=false; else userData['career'] = parseFloat(v);
+        }
+        else if(type === 'income') {
+            const v = document.getElementById('income').value;
+            if(!v) valid=false; else userData['income'] = parseInt(v);
+        }
+        else if(type === 'perf') {
+            const c = document.getElementById('count').value;
+            const p = document.getElementById('premium').value;
+            if(!c || !p) valid=false; 
+            else { userData['count']=parseFloat(c); userData['premium']=parseInt(p); }
+        }
+        else if(type === 'qual') {
+            const p13 = document.getElementById('p13').value;
+            const p25 = document.getElementById('p25').value;
+            if(!p13 || !p25) valid=false;
+            else { userData['p13']=parseInt(p13); userData['p25']=parseInt(p25); }
+        }
+        else if(type === 'info') {
+            const n = document.getElementById('userName').value;
+            const b = document.getElementById('birthYear').value;
+            const r = document.getElementById('region').value;
+            if(!n || !b || !r) valid=false;
+            else { userData['name']=n; userData['birth']=b; userData['region']=r; }
+        }
+        else if(type === 'contact') {
+            const m = document.getElementById('p_mid').value;
+            const e = document.getElementById('p_end').value;
+            if(!m || !e || m.length<4 || e.length<4) valid=false;
+            else {
+                userData['phone'] = `010-${m}-${e}`;
+                finishGame();
+                return;
+            }
+        }
+
+        if(!valid) {
+            alert('정보를 정확히 입력해주세요.');
+            return;
+        }
+        nextStep();
     }
 
     function finishGame() {
-        showMenu(null);
-        document.getElementById('npc-display-area').classList.add('hidden'); 
+        // Calculation
+        const income = userData['income'] || 0;
+        let mult = 1.0;
         
-        // Loading
-        const loading = document.getElementById('loading-screen');
-        const bar = document.getElementById('loading-bar');
-        loading.style.display = 'flex';
+        // Logic placeholders
+        if(userData['job_hop'] === 0) mult += 0.1;
+        if(userData['job_hop'] >= 3) mult -= 0.2;
+        if(userData['p13'] >= 95) mult += 0.1;
         
-        setTimeout(() => { bar.style.width = "50%"; }, 500);
-        setTimeout(() => { bar.style.width = "100%"; }, 1200);
-        
-        setTimeout(() => {
-            loading.style.display = 'none';
-            showResult();
-        }, 2000);
-    }
-
-    function showResult() {
-        const income = parseFloat(userData['income']) || 0;
-        let mult = 1;
-        if(userData['w_score'] > 0) mult += 0.2;
-        if(userData['mdrt'] > 0) mult += 0.3;
-        
-        let final = Math.round(income * mult * 0.5); 
+        let final = Math.round(income * mult * 0.5); // base calc
         let pct = Math.round((final/income)*100);
+        
+        showStepScreen('step-result');
+        
+        document.getElementById('res-img').src = `https://api.dicebear.com/9.x/initials/svg?seed=${userData['name']}&backgroundColor=1f2937`;
+        document.getElementById('res-name').innerText = userData['name'];
+        document.getElementById('res-role').innerText = userData['position'].name.split(':')[0];
+        
+        const rMap = {'member':'1군 선수 (팀원)', 'team_leader':'주장 (팀장)', 'branch_manager':'코치 (지점장)', 'director':'감독 (본부장)'};
+        document.getElementById('res-rank-txt').innerText = rMap[userData['rank']];
 
-        // Result Scene Setup
-        // Show user avatar & elder
-        document.getElementById('npc-display-area').classList.remove('hidden');
-        document.getElementById('main-char-img').src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Elder&clothing=robe&skinColor=f2d3b1";
-        document.getElementById('npc-name').innerText = "이장님";
-
-        typeText("분석이 끝났네. 자네의 전설적인 가치를 확인하게!", () => {
-            showMenu('result-menu');
-            document.getElementById('resName').innerText = userData['userName'];
-            const ranks = {'member':'팀원', 'team_leader':'팀장', 'branch_manager':'지점장', 'director':'본부장'};
-            document.getElementById('resRank').innerText = ranks[userData['rank']];
-            document.getElementById('resCharClass').innerText = userData['character'].name;
-            document.getElementById('result-char-img').src = userData['character'].img;
-            
-            const premium = parseInt(userData['premium']) || 0;
-            document.getElementById('resProd').innerText = premium >= 50 ? "탁월 (S)" : (premium >= 30 ? "우수 (A)" : "보통 (B)");
-            document.getElementById('resQual').innerText = "안정 (A)";
-            document.getElementById('resAct').innerText = "활발 (A)";
-            
-            document.getElementById('rankingPercent').innerText = Math.floor(Math.random() * 10) + 1;
-            document.getElementById('aiAdvice').innerText = "자네는 전설이 될 자질이 충분하네. 더 넓은 세상으로 나아가게!";
-
-            let current = 0;
-            const timer = setInterval(() => {
-                current += Math.ceil(final / 30);
-                if(current >= final) { current = final; clearInterval(timer); }
-                document.getElementById('finalPrice').innerText = current.toLocaleString();
-            }, 30);
-            document.getElementById('finalPct').innerText = pct;
-        });
+        // Animate
+        let current = 0;
+        const timer = setInterval(() => {
+            current += Math.ceil(final / 30);
+            if(current >= final) { current = final; clearInterval(timer); }
+            document.getElementById('finalPrice').innerText = current.toLocaleString();
+        }, 30);
+        document.getElementById('finalPct').innerText = pct;
+        
+        // Random Stats
+        document.getElementById('res-prod').innerText = "A";
+        document.getElementById('res-qual').innerText = userData['p13'] >= 90 ? "A+" : "B";
+        document.getElementById('res-ranking').innerText = Math.floor(Math.random()*15)+1;
+        
+        document.getElementById('aiAdvice').innerText = "이 선수는 팀의 핵심 전력이 될 자질이 충분합니다. 즉시 영입을 추천합니다.";
     }
 
-    function shareLink() { alert("결과가 클립보드에 복사되었습니다."); }
+    function shareLink() { alert("리포트 주소가 복사되었습니다."); }
+
 </script>
 
 </body>
