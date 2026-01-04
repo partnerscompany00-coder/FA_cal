@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>영업의 전설 : 내 가치 찾기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Dalgona/neodgm/neodgm.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            /* Cohesive Retro Palette */
+            --bg-color: #202028;       /* Dark Slate */
+            --window-bg: #111111;      /* Almost Black */
+            --text-color: #f0f0f0;     /* Off White */
+            --accent-color: #fbbf24;   /* Amber/Gold */
+            --highlight-color: #3b82f6; /* Blue for special items */
+            --border-color: #ffffff;
+        }
+
+        body {
+            font-family: 'NeoDungGeunMo', monospace;
+            background-color: #1a1a1a;
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Main Game Container */
+        .game-frame {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            max-height: 900px;
+            background-color: var(--bg-color);
+            /* Subtle Grid Pattern */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #444;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Retro Window Style (Classic RPG Box) */
+        .rpg-box {
+            background-color: var(--window-bg);
+            border: 4px double var(--border-color);
+            border-radius: 4px;
+            padding: 16px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+            color: var(--text-color);
+            position: relative;
+        }
+
+        /* Top HUD */
+        .hud {
+            padding: 12px 16px;
+            background-color: var(--window-bg);
+            border-bottom: 4px double var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            z-index: 10;
+        }
+        .hud-label { color: var(--accent-color); font-size: 10px; letter-spacing: 1px; display: block;}
+
+        /* Main Scene */
+        .scene {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            padding-bottom: 160px; /* Dialogue space */
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* NPC/Character */
+        .npc-container {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+            /* Floating animation */
+            animation: float 3s ease-in-out infinite;
+        }
+        .npc-frame {
+            position: relative;
+            background: #2d3748;
+            border: 4px solid #fff;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+            padding: 8px;
+        }
+        .npc-bg {
+            background: #4a5568;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .npc-img {
+            width: 100px;
+            height: 100px;
+            image-rendering: pixelated;
+            filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
+        }
+
+        /* Title Screen */
+        .title-screen {
+            text-align: center;
+            z-index: 5;
+            padding: 20px;
+        }
+        .title-main {
+            font-size: 42px;
+            color: var(--accent-color);
+            text-shadow: 4px 4px 0 #000;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .title-sub {
+            color: #fff;
+            background: #000;
+            padding: 4px 12px;
+            border: 2px solid #fff;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .press-start {
+            margin-top: 60px;
+            color: #fff;
+            animation: blink 0.8s step-end infinite;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Menus */
+        .menu-wrapper {
+            width: 100%;
+            max-width: 400px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 20;
+            animation: fadeIn 0.3s;
+        }
+        .menu-wrapper.active { display: flex; }
+
+        /* Pixel Buttons */
+        .pixel-btn {
+            background: var(--bg-color);
+            border: 2px solid #666;
+            color: #ccc;
+            padding: 14px 16px;
+            font-family: 'NeoDungGeunMo';
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.1s;
+            position: relative;
+            box-shadow: 2px 2px 0 #000;
+        }
+        .pixel-btn:hover, .pixel-btn:active, .pixel-btn.selected {
+            background: #2d3748;
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0 #000;
+        }
+        /* Selection Indicator */
+        .pixel-btn:hover::after, .pixel-btn.selected::after {
+            content: '◀';
+            position: absolute;
+            right: 15px;
+            color: var(--accent-color);
+        }
+
+        .pixel-btn-back {
+            background: #333;
+            border: 2px solid #555;
+            color: #999;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .pixel-btn-back:hover { background: #444; color: #fff; }
+
+        /* Inputs */
+        .pixel-input {
+            width: 100%;
+            background: #000;
+            border: 2px solid #666;
+            color: #fff;
+            padding: 12px;
+            font-family: 'NeoDungGeunMo';
+            font-size: 18px;
+            outline: none;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .pixel-input:focus {
+            border-color: var(--accent-color);
+        }
+        .input-label {
+            display: block;
+            color: var(--accent-color);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        /* Dialogue Box (Bottom) */
+        .dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 130px;
+            background-color: var(--window-bg);
+            border: 4px double var(--border-color);
+            padding: 16px;
+            z-index: 50;
+            display: none; /* Controlled by JS */
+        }
+        .npc-nametag {
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background: var(--accent-color);
+            color: #000;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #fff;
+        }
+        .dialogue-text {
+            font-size: 17px;
+            line-height: 1.6;
+            margin-top: 5px;
+        }
+
+        /* Character Cards (Grid) */
+        .char-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .char-card {
+            background: #2d3748;
+            border: 2px solid #4a5568;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .char-card:hover {
+            border-color: var(--accent-color);
+            background: #1a202c;
+        }
+        .char-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 12px;
+            border: 2px solid #fff;
+            background: #4a5568;
+            padding: 2px;
+            image-rendering: pixelated;
+        }
+
+        /* Animations */
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #555; }
+        
+        /* Utility */
+        .text-accent { color: var(--accent-color); }
+        .text-highlight { color: var(--highlight-color); }
+    </style>
+</head>
+<body>
+
+<div class="game-frame">
+    
+    <!-- HUD -->
+    <div class="hud">
+        <div class="text-center">
+            <span class="hud-label">LEVEL</span>
+            <span id="levelDisplay">1</span>
+        </div>
+        <div class="text-center">
+            <span class="hud-label">PLAYERS</span>
+            <span id="userCount">0</span>
+        </div>
+        <div class="text-center">
+            <span class="hud-label">HP</span>
+            <span class="text-red-500">❤️❤️❤️</span>
+        </div>
+    </div>
+
+    <!-- Scene -->
+    <div class="scene">
+        
+        <!-- Intro Screen -->
+        <div id="game-title" class="title-screen">
+            <div class="mb-6 text-6xl">🏰</div>
+            <h1 class="title-main">LEGEND OF<br>SALES</h1>
+            <div class="title-sub">전설의 영업자</div>
+            <div class="mt-8"></div>
+            <div class="press-start" onclick="goToCharSelect()">▶ PRESS START ◀</div>
+        </div>
+
+        <!-- NPC / Character Area -->
+        <div class="npc-container hidden" id="npc-display-area">
+            <div class="npc-frame">
+                <div class="npc-bg">
+                    <img id="main-char-img" src="" alt="Character" class="npc-img">
+                </div>
+            </div>
+        </div>
+
+        <!-- Menus -->
+        
+        <!-- 1. Character Select -->
+        <div id="char-select-menu" class="menu-wrapper">
+            <div class="rpg-box">
+                <p class="text-center text-accent mb-4 border-b border-gray-600 pb-2">직업 선택 (CLASS SELECT)</p>
+                <div id="char-list" class="char-grid">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Choice Menu -->
+        <div id="choice-menu" class="menu-wrapper">
+            <div id="choice-buttons-container" class="flex flex-col gap-2"></div>
+            <button class="pixel-btn-back w-full mt-2" onclick="prevStep()">뒤로 가기</button>
+        </div>
+
+        <!-- 3. Input Menu -->
+        <div id="input-menu" class="menu-wrapper">
+            <div class="rpg-box">
+                <div id="input-fields" class="flex flex-col gap-4"></div>
+            </div>
+            <div class="flex gap-2 mt-2">
+                <button class="pixel-btn-back flex-1" onclick="prevStep()">뒤로</button>
+                <button class="pixel-btn flex-1 text-center" style="border-color:var(--accent-color); color:var(--accent-color);" onclick="submitInput()">결정</button>
+            </div>
+        </div>
+
+        <!-- 4. Result Menu -->
+        <div id="result-menu" class="menu-wrapper" style="max-width: 95%;">
+            <div class="rpg-box" style="max-height: 60vh; overflow-y: auto;">
+                <div class="text-center border-b border-gray-600 pb-4 mb-4">
+                    <h2 class="text-2xl text-accent mb-1">평가 리포트</h2>
+                    <p class="text-xs text-gray-500">STATUS REPORT</p>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="flex items-center bg-gray-800 p-3 mb-4 border border-gray-600">
+                    <div class="mr-4 border border-white">
+                         <img id="result-char-img" src="" class="w-16 h-16 bg-gray-700 block">
+                    </div>
+                    <div class="flex-1 text-sm">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-gray-400">이름</span>
+                            <span class="text-white" id="resName">---</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-gray-400">직업</span>
+                            <span class="text-accent" id="resCharClass">---</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">직급</span>
+                            <span class="text-white" id="resRank">---</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score -->
+                <div class="text-center p-4 bg-gray-800 border border-gray-600 mb-4">
+                    <p class="text-xs text-accent mb-1">추정 이적료 (BOUNTY)</p>
+                    <div class="text-3xl text-white mb-1">
+                        <span id="finalPrice">0</span> <span class="text-lg text-gray-400">만원</span>
+                    </div>
+                    <p class="text-xs text-gray-500">(연봉 대비 <span id="finalPct" class="text-white">0</span>% 가치)</p>
+                </div>
+
+                <!-- Rank -->
+                <div class="bg-gray-900 p-2 text-center text-xs mb-4 border border-gray-700">
+                    <span class="text-gray-400">전체 랭킹:</span> 상위 <span class="text-accent font-bold" id="rankingPercent">0</span>%
+                </div>
+
+                <!-- Stats -->
+                <div class="text-sm mb-4 space-y-2 border-t border-gray-600 pt-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">⚔️ 생산성</span>
+                        <span class="text-white" id="resProd">---</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">🛡️ 건전성</span>
+                        <span class="text-white" id="resQual">---</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">⚡ 활동성</span>
+                        <span class="text-white" id="resAct">---</span>
+                    </div>
+                </div>
+
+                <!-- Advice -->
+                <div class="text-sm bg-gray-800 p-3 border-l-4 border-accent text-gray-300 leading-relaxed">
+                    <strong class="block text-accent mb-1">이장님의 조언</strong>
+                    <span id="aiAdvice">...</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-2">
+                <button class="pixel-btn text-center" style="padding:10px;" onclick="shareLink()">결과 저장</button>
+                <button class="pixel-btn text-center" style="padding:10px;" onclick="location.reload()">처음으로</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Dialogue Box -->
+    <div class="dialogue-box" id="main-dialogue">
+        <div class="npc-nametag" id="npc-name">이장님</div>
+        <p class="dialogue-text" id="npc-text"></p>
+        <span class="text-accent absolute bottom-4 right-4 animate-bounce">▼</span>
+    </div>
+
+</div>
+
+<script>
+    // --- Configuration ---
+    // Characters (10th Century Medieval Fantasy Style - No Modern/Dark Skin)
+    const characters = [
+        { id: 'knight', name: '기사', desc: '기본기 탄탄! 성실함으로 신뢰를 쌓는 정통파 영업', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Arthur&clothing=plate&skinColor=ecad80' },
+        { id: 'barbarian', name: '바바리안', desc: '거절은 없다! 망설임 없이 계약을 따내는 클로징 마스터', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Conan&clothing=layer&skinColor=ecad80' },
+        { id: 'archer', name: '궁수', desc: '보이지 않아도 적중! 전화 한 통으로 마음을 훔치는 TA 고수', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Robin&clothing=jacket&hat=hat&skinColor=f2d3b1' },
+        { id: 'wizard', name: '마법사', desc: '판을 읽는 눈! 팀의 방향을 제시하는 전략가 리더', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Merlin&clothing=robe&skinColor=f2d3b1' },
+        { id: 'fairy', name: '요정', desc: '섬세한 케어! 고객과 동료의 마음을 치유하는 서포터', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Tinker&clothing=collarAndSweater&skinColor=f2d3b1' }
+    ];
+
+    // --- State ---
+    let currentStep = 0;
+    let userData = {};
+    let subStepQueue = []; 
+    let visitorCount = parseInt(localStorage.getItem('fa_retro_users') || '342');
+
+    // --- Init ---
+    window.onload = function() {
+        visitorCount += Math.floor(Math.random() * 3);
+        localStorage.setItem('fa_retro_users', visitorCount);
+        document.getElementById('userCount').innerText = visitorCount;
+    };
+
+    // --- Core Functions ---
+    function typeText(text, callback) {
+        const dialogBox = document.getElementById('main-dialogue');
+        const textBox = document.getElementById('npc-text');
+        
+        dialogBox.style.display = 'block';
+        textBox.innerHTML = ''; 
+        let i = 0;
+        const speed = 20; 
+        
+        function type() {
+            if (i < text.length) {
+                textBox.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                if (callback) callback();
+            }
+        }
+        type();
+    }
+
+    const menuIds = ['char-select-menu', 'choice-menu', 'input-menu', 'result-menu'];
+    function showMenu(id) {
+        menuIds.forEach(mId => {
+            document.getElementById(mId).classList.remove('active');
+        });
+        if(id) document.getElementById(id).classList.add('active');
+    }
+
+    // --- Game Logic ---
+    function goToCharSelect() {
+        document.getElementById('game-title').style.display = 'none';
+        
+        // NPC: Village Elder (Medieval Style)
+        document.getElementById('npc-display-area').classList.remove('hidden');
+        document.getElementById('main-char-img').src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Elder&clothing=robe&skinColor=f2d3b1";
+        document.getElementById('npc-name').innerText = "이장님";
+
+        typeText("자네의 영업 성향과 가장 비슷한 직업을 골라보게나.", () => {
+            const list = document.getElementById('char-list');
+            list.innerHTML = '';
+            characters.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `
+                    <img src="${char.img}" class="char-icon">
+                    <div class="flex-1">
+                        <h4 class="text-accent text-sm font-bold mb-1">${char.name}</h4>
+                        <p class="text-xs text-gray-400">${char.desc}</p>
+                    </div>
+                `;
+                card.onclick = () => selectCharacter(char);
+                list.appendChild(card);
+            });
+            showMenu('char-select-menu');
+        });
+    }
+
+    function selectCharacter(char) {
+        userData['character'] = char;
+        // Update NPC to Selected Character
+        document.getElementById('main-char-img').src = char.img;
+        document.getElementById('npc-name').innerText = "나 (" + char.name + ")";
+        startGame();
+    }
+
+    // Steps
+    const baseSteps = [
+        { type: 'choice', text: "자네는 어느 마을(소속)에서 왔는가?", options: [ {label:"GA (법인대리점)", value:"ga", key:"affiliation"}, {label:"원수사 (생명)", value:"life", key:"affiliation"}, {label:"원수사 (손해)", value:"nonlife", key:"affiliation"} ] },
+        { type: 'choice', text: "현재 자네의 직업(직급)은 무엇인고?", options: [ {label:"팀원 (FA/FC)", value:"member", key:"rank"}, {label:"팀장 (SM/FM)", value:"team_leader", key:"rank"}, {label:"지점장 (BM)", value:"branch_manager", key:"rank"}, {label:"본부장/임원", value:"director", key:"rank"} ] },
+        { type: 'input', text: "자네가 이끄는 동료(조직원)는 몇 명인가?", inputs: [{ id: 'team_size', label: '조직원 수 (명)', type: 'number', placeholder: '0' }] },
+        { type: 'input', text: "전투 기록(경력/연봉)을 보여주게.", inputs: [ { id: 'career', label: '경력 (년)', type: 'number', placeholder: '3' }, { id: 'income', label: '직전 연봉 (만원)', type: 'number', placeholder: '5000' }, { id: 'job_hop', label: '최근 3년 이직 횟수', type: 'select', options: ['0회', '1회', '2회', '3회 이상'], values: [0, 1, 2, 3] } ] },
+        { type: 'choice', text: "주간 연속 청약(W) 경험이 있나?", options: [ {label:"기록 없음", value:0, key:"w_score"}, {label:"1W (10주 이상)", value:0.03, key:"w_score"}, {label:"1W (20주 이상)", value:0.05, key:"w_score"}, {label:"2W (50주 이상)", value:0.10, key:"w_score"}, {label:"3W (50주 이상)", value:0.15, key:"w_score"} ] },
+        { type: 'input', text: "자네의 평소 공격력(실적)은 어느 정도인가?", inputs: [ { id: 'count', label: '월 평균 건수', type: 'number', placeholder: '4.5' }, { id: 'premium', label: '월 평균 보험료 (만원)', type: 'number', placeholder: '50' } ] },
+        { type: 'choice', text: "주로 어떤 방식으로 영업을 하는가?", options: [ {label:"개척 영업 (맨땅)", value:0.1, key:"sales_style"}, {label:"지인/소개 (인맥)", value:0.05, key:"sales_style"}, {label:"DB 영업 (지급)", value:-0.05, key:"sales_style"} ] },
+        { type: 'choice', text: "주무기(주력 상품)는 무엇인가?", options: [ {label:"보장성 (암/종신)", value:0.1, key:"portfolio"}, {label:"저축성 (연금)", value:0, key:"portfolio"}, {label:"자동차/화재", value:-0.05, key:"portfolio"}, {label:"복합 (기타)", value:0, key:"portfolio"} ] },
+        { type: 'input', text: "방패(유지율) 상태를 점검하겠네.", inputs: [ { id: 'persistency13', label: '13회차 유지율 (%)', type: 'number', placeholder: '90' }, { id: 'persistency25', label: '25회차 유지율 (%)', type: 'number', placeholder: '80' } ] },
+        { type: 'choice', text: "명예의 전당(MDRT)에 오른 적이 있는가?", options: [ {label:"없음", value:0, key:"mdrt"}, {label:"MDRT", value:0.1, key:"mdrt"}, {label:"COT", value:0.15, key:"mdrt"}, {label:"TOT", value:0.2, key:"mdrt"} ] },
+        { type: 'choice', text: "현재 머물고 있는 길드(조직)에 만족하는가?", options: [ {label:"매우 만족", value:'very_sat', key:'satisfaction'}, {label:"대체로 만족", value:'sat', key:'satisfaction'}, {label:"보통", value:'avg', key:'satisfaction'}, {label:"불만족", value:'unsat', key:'satisfaction'}, {label:"매우 불만족", value:'very_unsat', key:'satisfaction'} ] },
+        { type: 'input', text: "이제 모험가 명부에 등록하겠네.", inputs: [ { id: 'userName', label: '이름 (실명)', type: 'text', placeholder: '홍길동' }, { id: 'birthYear', label: '출생년도', type: 'number', placeholder: '1990' }, { id: 'gender', label: '성별', type: 'select', options: ['남성', '여성'], values: ['M', 'F'] }, { id: 'region', label: '활동 지역', type: 'text', placeholder: '서울' } ] },
+        { type: 'input', subtype: 'phone', text: "비둘기(연락처)를 남겨주게.", inputs: [] }
+    ];
+
+    let stepsQueue = [];
+
+    function startGame() {
+        stepsQueue = [...baseSteps];
+        currentStep = 0;
+        processStep();
+    }
+
+    function processStep() {
+        showMenu(null);
+        document.getElementById('levelDisplay').innerText = currentStep + 1;
+        if (currentStep >= stepsQueue.length) {
+            finishGame(); return;
+        }
+        let step = stepsQueue[currentStep];
+        typeText(step.text, () => {
+            renderStep(step);
+        });
+    }
+
+    function renderStep(step) {
+        if(step.type === 'choice') {
+            const container = document.getElementById('choice-buttons-container');
+            container.innerHTML = '';
+            step.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'pixel-btn';
+                btn.innerText = opt.label;
+                btn.onclick = () => {
+                    userData[opt.key] = opt.value;
+                    if(opt.key === 'satisfaction') handleSatisfaction(opt.value);
+                    nextStep();
+                };
+                container.appendChild(btn);
+            });
+            showMenu('choice-menu');
+        } else {
+            const container = document.getElementById('input-fields');
+            container.innerHTML = '';
+            if(step.subtype === 'phone') {
+                container.innerHTML = `
+                    <div class="flex gap-2">
+                        <input type="text" value="010" readonly class="pixel-input w-1/4 text-gray-500 border-gray-600">
+                        <input type="tel" id="p_mid" class="pixel-input w-1/3" maxlength="4" placeholder="1234">
+                        <input type="tel" id="p_end" class="pixel-input w-1/3" maxlength="4" placeholder="5678">
+                    </div>`;
+            } else {
+                step.inputs.forEach(inp => {
+                    const label = document.createElement('label');
+                    label.className = 'input-label';
+                    label.innerText = inp.label;
+                    container.appendChild(label);
+                    
+                    if(inp.type === 'select') {
+                        const sel = document.createElement('select');
+                        sel.id = inp.id;
+                        sel.className = 'pixel-input';
+                        inp.options.forEach((o, i) => {
+                            const opt = document.createElement('option');
+                            opt.text = o; opt.value = inp.values[i];
+                            sel.add(opt);
+                        });
+                        container.appendChild(sel);
+                    } else {
+                        const input = document.createElement('input');
+                        input.id = inp.id; input.type = inp.type;
+                        input.className = 'pixel-input';
+                        input.placeholder = inp.placeholder;
+                        if(userData[inp.id]) input.value = userData[inp.id];
+                        container.appendChild(input);
+                    }
+                });
+            }
+            showMenu('input-menu');
+        }
+    }
+
+    function handleSatisfaction(val) {
+        let idx = currentStep + 1;
+        while(stepsQueue.length > idx && stepsQueue[idx].isDynamic) stepsQueue.splice(idx, 1);
+        
+        const pros = [ {label:"DB 공급", value:"db"}, {label:"시스템", value:"sys"}, {label:"수수료", value:"pay"}, {label:"기타", value:"etc"} ];
+        const cons = [ {label:"DB 부족", value:"db_lack"}, {label:"시스템", value:"sys"}, {label:"수수료", value:"pay"}, {label:"기타", value:"etc"} ];
+        
+        let newStep = { type: 'choice', isDynamic: true, options: [], text: "" };
+        
+        if (val === 'very_sat' || val === 'sat') {
+            newStep.text = "오호! 어떤 점이 훌륭한가?";
+            newStep.options = pros.map(p => ({...p, key:'reason'}));
+        } else if (val === 'very_unsat' || val === 'unsat') {
+            newStep.text = "저런... 무엇이 문제인가?";
+            newStep.options = cons.map(c => ({...c, key:'reason'}));
+        } else {
+            newStep.text = "그렇다면, 가장 아쉬운 점은 무엇인가?";
+            newStep.options = cons.map(c => ({...c, key:'reason'}));
+        }
+        stepsQueue.splice(idx, 0, newStep);
+    }
+
+    function submitInput() {
+        const step = stepsQueue[currentStep];
+        let valid = true;
+        if(step.subtype === 'phone') {
+            const m = document.getElementById('p_mid').value;
+            const e = document.getElementById('p_end').value;
+            if(m.length < 4 || e.length < 4) { alert('연락처를 확인해주세요.'); return; }
+            userData['phone'] = `010-${m}-${e}`;
+        } else {
+            step.inputs.forEach(inp => {
+                const el = document.getElementById(inp.id);
+                if(!el.value) { el.style.borderColor = "red"; valid=false; }
+                else userData[inp.id] = el.value;
+            });
+        }
+        if(valid) nextStep();
+    }
+
+    function nextStep() {
+        currentStep++;
+        processStep();
+    }
+
+    function prevStep() {
+        if(currentStep > 0) {
+            currentStep--;
+            processStep();
+        } else {
+            // Back to char select
+            goToCharSelect();
+        }
+    }
+
+    function finishGame() {
+        showMenu(null);
+        document.getElementById('npc-display-area').classList.add('hidden'); // Hide Avatar
+        document.getElementById('npc-name').innerText = "이장님"; 
+
+        // Calc Logic
+        const income = parseFloat(userData['income']) || 0;
+        let mult = 1;
+        // Simple logic placeholder
+        if(userData['w_score'] > 0) mult += 0.2;
+        if(userData['mdrt'] > 0) mult += 0.3;
+        
+        let final = Math.round(income * mult * 0.5); // Base formula
+        let pct = Math.round((final/income)*100);
+
+        typeText("이것이 자네가 얻은 전설의 평가서라네!", () => {
+            showMenu('result-menu');
+            document.getElementById('resName').innerText = userData['userName'];
+            const ranks = {'member':'팀원', 'team_leader':'팀장', 'branch_manager':'지점장', 'director':'본부장'};
+            document.getElementById('resRank').innerText = ranks[userData['rank']];
+            document.getElementById('resCharClass').innerText = userData['character'].name;
+            document.getElementById('result-char-img').src = userData['character'].img;
+            
+            document.getElementById('finalPrice').innerText = final.toLocaleString();
+            document.getElementById('finalPct').innerText = pct;
+            
+            // Random stats
+            document.getElementById('resProd').innerText = "탁월 (A)";
+            document.getElementById('resQual').innerText = "안정 (B+)";
+            document.getElementById('resAct').innerText = "우수 (A)";
+            
+            document.getElementById('rankingPercent').innerText = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('aiAdvice').innerText = "자네는 전설이 될 자질이 충분하네. 더 넓은 세상으로 나아가게!";
+        });
+    }
+
+    function shareLink() { alert("결과가 클립보드에 복사되었습니다."); }
+</script>
+
+</body>
+</html>
