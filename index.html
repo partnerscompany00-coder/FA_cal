@@ -37,7 +37,7 @@
         .fm-frame {
             width: 100%;
             max-width: 480px;
-            height: 100dvh;
+            height: 100dvh; /* Mobile viewport fix */
             max-height: 900px;
             background-color: var(--fm-bg);
             position: relative;
@@ -283,7 +283,7 @@
             backdrop-filter: blur(5px);
             transition: transform 0.3s ease;
         }
-        /* Hide when keyboard active logic (handled via JS or CSS focus-within) */
+        /* Hide when keyboard active logic */
         .message-box.hidden-kb { transform: translateY(100%); }
 
         .msg-avatar {
@@ -331,6 +331,8 @@
         .val-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
         .val-amount { font-size: 28px; font-weight: 800; color: #fff; }
         .val-sub { font-size: 12px; color: #d1d5db; font-weight: 500; }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -373,7 +375,7 @@
         <div id="step-position" class="menu-wrapper">
             <div class="fm-box">
                 <div class="fm-box-header">
-                    <span>Select Position</span> <span class="text-xs text-gray-500">1/13</span>
+                    <span>Select Position</span> <span class="text-xs text-gray-500">1/15</span>
                 </div>
                 <div class="fm-box-content p-2">
                     <div id="pos-list"></div>
@@ -384,7 +386,7 @@
         <!-- 2. Rank -->
         <div id="step-rank" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Current Status (직급)</span> <span>2/13</span></div>
+                <div class="fm-box-header"><span>Current Status (직급)</span> <span>2/15</span></div>
                 <div class="fm-box-content">
                     <div id="rank-options"></div>
                 </div>
@@ -395,11 +397,11 @@
         <!-- 3. Team Size -->
         <div id="step-team" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Staff Management (조직)</span> <span>3/13</span></div>
+                <div class="fm-box-header"><span>Staff Management (조직)</span> <span>3/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label">본인 산하 조직원 수 (명)</label>
                     <input type="number" id="team_size" class="fm-input" placeholder="0" onfocus="hideMsg()" onblur="showMsg()">
-                    <p class="text-xs text-gray-500 mt-2">
+                    <p class="text-xs text-gray-500 mt-2" id="team-hint">
                         * 팀원: 0명 / 팀장: 1~5명 / 지점장: 6~20명 / 본부장: 21명+
                     </p>
                 </div>
@@ -410,10 +412,22 @@
             </div>
         </div>
 
-        <!-- 4. Career -->
+        <!-- 4. License [NEW] -->
+        <div id="step-license" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Skill Attributes (자격)</span> <span>4/15</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label mb-2">보유 자격증 범위</label>
+                    <div id="license-options"></div>
+                </div>
+            </div>
+            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
+        </div>
+
+        <!-- 5. Career -->
         <div id="step-career" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Experience (경력)</span> <span>4/13</span></div>
+                <div class="fm-box-header"><span>Experience (경력)</span> <span>5/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label">총 영업 경력 (년)</label>
                     <input type="number" id="career" class="fm-input" placeholder="예: 3" onfocus="hideMsg()" onblur="showMsg()">
@@ -425,10 +439,10 @@
             </div>
         </div>
 
-        <!-- 5. Income -->
+        <!-- 6. Income -->
         <div id="step-income" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Previous Wage (연봉)</span> <span>5/13</span></div>
+                <div class="fm-box-header"><span>Previous Wage (연봉)</span> <span>6/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label">직전연도 원천징수 금액 (만원)</label>
                     <input type="number" id="income" class="fm-input" placeholder="예: 6000" onfocus="hideMsg()" onblur="showMsg()">
@@ -441,10 +455,10 @@
             </div>
         </div>
 
-        <!-- 6. History -->
+        <!-- 7. History -->
         <div id="step-history" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Transfer History (이적)</span> <span>6/13</span></div>
+                <div class="fm-box-header"><span>Transfer History (이적)</span> <span>7/15</span></div>
                 <div class="fm-box-content">
                     <p class="text-xs text-red-500 font-bold mb-3">⚠ 최근 3년 이내 이직 횟수</p>
                     <div id="history-options"></div>
@@ -453,10 +467,10 @@
             <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
         </div>
 
-        <!-- 7. Sales Style (Tactics) [복구됨] -->
+        <!-- 8. Sales Style -->
         <div id="step-style" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Tactical Style (전술 성향)</span> <span>7/13</span></div>
+                <div class="fm-box-header"><span>Tactical Style (전술 성향)</span> <span>8/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label mb-2">주력 영업 방식</label>
                     <div id="style-options"></div>
@@ -465,10 +479,22 @@
             <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
         </div>
 
-        <!-- 8. Portfolio (Specialty) [복구됨] -->
+        <!-- 9. Target Client [NEW] -->
+        <div id="step-client" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Target Market (고객)</span> <span>9/15</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label mb-2">주력 고객 연령대/유형</label>
+                    <div id="client-options"></div>
+                </div>
+            </div>
+            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
+        </div>
+
+        <!-- 10. Portfolio -->
         <div id="step-portfolio" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Preferred Moves (선호 플레이)</span> <span>8/13</span></div>
+                <div class="fm-box-header"><span>Preferred Moves (상품)</span> <span>10/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label mb-2">주력 판매 상품군</label>
                     <div id="portfolio-options"></div>
@@ -477,10 +503,10 @@
             <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
         </div>
 
-        <!-- 9. W Score -->
+        <!-- 11. W Score -->
         <div id="step-w" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Consistency (꾸준함)</span> <span>9/13</span></div>
+                <div class="fm-box-header"><span>Consistency (꾸준함)</span> <span>11/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label mb-2">주간 연속 청약(W) 달성 기록</label>
                     <div id="w-options"></div>
@@ -489,10 +515,10 @@
             <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
         </div>
 
-        <!-- 10. Performance -->
+        <!-- 12. Performance -->
         <div id="step-perf" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Season Stats (실적)</span> <span>10/13</span></div>
+                <div class="fm-box-header"><span>Season Stats (실적)</span> <span>12/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label">월 평균 건수</label>
                     <input type="number" id="count" class="fm-input mb-4" placeholder="예: 4.5" onfocus="hideMsg()" onblur="showMsg()">
@@ -507,10 +533,10 @@
             </div>
         </div>
 
-        <!-- 11. MDRT & Quality -->
+        <!-- 13. MDRT & Quality -->
         <div id="step-qual" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Quality & Honor</span> <span>11/13</span></div>
+                <div class="fm-box-header"><span>Quality & Honor</span> <span>13/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label mb-2">MDRT 달성 경험 (최근 2년)</label>
                     <div id="mdrt-options" class="mb-4"></div>
@@ -528,39 +554,38 @@
             </div>
         </div>
 
-        <!-- 12. Info -->
+        <!-- 14. Priority [NEW] -->
+        <div id="step-needs" class="menu-wrapper">
+            <div class="fm-box">
+                <div class="fm-box-header"><span>Contract Priority (우선순위)</span> <span>14/15</span></div>
+                <div class="fm-box-content">
+                    <label class="fm-label mb-2">이직 시 최우선 고려 사항</label>
+                    <div id="needs-options"></div>
+                </div>
+            </div>
+            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
+        </div>
+
+        <!-- 15. Info & Contact -->
         <div id="step-info" class="menu-wrapper">
             <div class="fm-box">
-                <div class="fm-box-header"><span>Personal Details</span> <span>12/13</span></div>
+                <div class="fm-box-header"><span>Player Registration</span> <span>15/15</span></div>
                 <div class="fm-box-content">
                     <label class="fm-label">이름 (실명)</label>
-                    <input type="text" id="userName" class="fm-input mb-4" placeholder="홍길동" onfocus="hideMsg()" onblur="showMsg()">
+                    <input type="text" id="userName" class="fm-input mb-3" placeholder="홍길동" onfocus="hideMsg()" onblur="showMsg()">
                     
-                    <label class="fm-label">성별</label>
-                    <div class="gender-grid">
+                    <div class="gender-grid mb-3">
                         <div class="gender-opt" onclick="selectGender('M', this)">남성</div>
                         <div class="gender-opt" onclick="selectGender('F', this)">여성</div>
                     </div>
                     <input type="hidden" id="gender">
 
                     <label class="fm-label">출생연도</label>
-                    <input type="number" id="birthYear" class="fm-input mb-4" placeholder="1990" onfocus="hideMsg()" onblur="showMsg()">
+                    <input type="number" id="birthYear" class="fm-input mb-3" placeholder="1990" onfocus="hideMsg()" onblur="showMsg()">
                     
                     <label class="fm-label">활동 지역</label>
-                    <input type="text" id="region" class="fm-input" placeholder="서울 강남" onfocus="hideMsg()" onblur="showMsg()">
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('info')">확인</button>
-            </div>
-        </div>
+                    <input type="text" id="region" class="fm-input mb-3" placeholder="서울 강남" onfocus="hideMsg()" onblur="showMsg()">
 
-        <!-- 13. Contact -->
-        <div id="step-contact" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Contact Info</span> <span>13/13</span></div>
-                <div class="fm-box-content">
                     <label class="fm-label">연락처</label>
                     <div class="flex gap-2">
                         <input type="text" value="010" readonly class="fm-input w-1/4 text-gray-500 bg-gray-800 text-center">
@@ -571,7 +596,7 @@
             </div>
             <div class="flex gap-2">
                 <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" style="background:#10b981;" onclick="submitInput('contact')">리포트 생성</button>
+                <button class="fm-btn-confirm flex-1" style="background:#10b981;" onclick="submitInput('info_contact')">리포트 생성</button>
             </div>
         </div>
 
@@ -707,6 +732,27 @@
         { l: 'COT', v: 0.15 },
         { l: 'TOT', v: 0.2 }
     ];
+    
+    // New Options
+    const licenseOpts = [
+        { l: '생/손보 공통 자격', v: 0 },
+        { l: '+ 변액 보험 자격', v: 0.05 },
+        { l: '+ 투자권유 대행인', v: 0.1 }
+    ];
+    
+    const clientOpts = [
+        { l: '직장인/2030', v: 'salary' },
+        { l: '주부/4050', v: 'homemaker' },
+        { l: '자영업자/소상공인', v: 'biz' },
+        { l: '법인/CEO/전문직', v: 'vip' }
+    ];
+    
+    const needsOpts = [
+        { l: 'DB 제공 및 질', v: 'db' },
+        { l: '수수료 (보너스)', v: 'pay' },
+        { l: '교육 시스템', v: 'edu' },
+        { l: '관리자 비전', v: 'vision' }
+    ];
 
     let userData = {};
     let currentStep = -1; 
@@ -751,17 +797,19 @@
                 case 'step-position': msg = "자신의 성향과 가장 잘 맞는 포지션을 선택하세요."; scene.classList.add('center-content'); break;
                 case 'step-rank': msg = "현재 소속된 팀에서의 직급은 무엇입니까?"; break;
                 case 'step-team': msg = "본인이 직접 관리하는 산하 조직원 수를 정확히 입력하세요."; break;
+                case 'step-license': msg = "보유하고 계신 보험 자격증의 범위를 선택해주세요."; break;
                 case 'step-career': msg = "총 영업 경력(개월/년)을 입력해주세요."; break;
                 case 'step-income': msg = "중요합니다. 작년 원천징수 영수증 기준 연봉은 얼마인가요?"; break;
                 case 'step-history': msg = "최근 3년 이내 이직 횟수를 솔직하게 선택해주세요."; break;
                 case 'step-style': msg = "주로 어떤 방식으로 영업을 전개하시나요? (전술 성향)"; break;
+                case 'step-client': msg = "주력으로 만나는 고객층(타겟)은 누구입니까?"; break;
                 case 'step-portfolio': msg = "가장 자신 있는 주력 상품군은 무엇입니까? (선호 플레이)"; break;
                 case 'step-w': msg = "주간 연속 청약(W) 달성 경험이 있다면 선택해주세요."; break;
                 case 'step-perf': msg = "월 평균 실적(건수, 보험료)을 입력하세요."; break;
                 case 'step-mdrt': msg = "명예의 전당(MDRT) 달성 이력이 있나요?"; break;
                 case 'step-qual': msg = "계약 건전성 지표(유지율)를 확인합니다."; break;
-                case 'step-info': msg = "리포트 발급을 위한 기본 정보를 입력해주세요."; break;
-                case 'step-contact': msg = "결과를 받아볼 연락처를 입력하세요."; break;
+                case 'step-needs': msg = "이직 시 가장 중요하게 생각하는 조건은 무엇입니까?"; break;
+                case 'step-info': msg = "리포트 발급을 위한 본인 정보를 입력해주세요."; break;
                 case 'step-result': 
                     document.getElementById('msg-box').style.display = 'none'; 
                     scene.classList.add('center-content');
@@ -771,7 +819,7 @@
         }
     }
 
-    // Hide/Show Msg Box on Input Focus to prevent keyboard overlay
+    // Hide/Show Msg Box on Input Focus
     function hideMsg() { document.getElementById('msg-box').style.display = 'none'; }
     function showMsg() { document.getElementById('msg-box').style.display = 'flex'; }
 
@@ -779,12 +827,12 @@
     function goToStep(stepIdx) {
         currentStep = stepIdx;
         const stepIds = [
-            'step-position', 'step-rank', 'step-team', 'step-career', 'step-income', 
-            'step-history', 'step-style', 'step-portfolio', 'step-w', 'step-perf', 
-            'step-mdrt', 'step-qual', 'step-info', 'step-contact', 'step-result'
+            'step-position', 'step-rank', 'step-team', 'step-license', 'step-career', 'step-income', 
+            'step-history', 'step-style', 'step-client', 'step-portfolio', 'step-w', 'step-perf', 
+            'step-mdrt', 'step-qual', 'step-needs', 'step-info', 'step-result'
         ];
         
-        // Render dynamic content
+        // Dynamic Render
         if (stepIdx === 0) { // Position
             const list = document.getElementById('pos-list');
             list.innerHTML = '';
@@ -802,24 +850,15 @@
                 list.appendChild(el);
             });
         }
-        else if (stepIdx === 1) { // Rank
-            renderButtons('rank-options', ranks, 'rank');
-        }
-        else if (stepIdx === 5) { // History
-            renderButtons('history-options', historyOpts, 'job_hop');
-        }
-        else if (stepIdx === 6) { // Style
-            renderButtons('style-options', styleOpts, 'sales_style');
-        }
-        else if (stepIdx === 7) { // Portfolio
-            renderButtons('portfolio-options', portOpts, 'portfolio');
-        }
-        else if (stepIdx === 8) { // W Score
-            renderButtons('w-options', wOpts, 'w_score');
-        }
-        else if (stepIdx === 10) { // MDRT
-            renderButtons('mdrt-options', mdrtOpts, 'mdrt');
-        }
+        else if (stepIdx === 1) renderButtons('rank-options', ranks, 'rank');
+        else if (stepIdx === 3) renderButtons('license-options', licenseOpts, 'license');
+        else if (stepIdx === 6) renderButtons('history-options', historyOpts, 'job_hop');
+        else if (stepIdx === 7) renderButtons('style-options', styleOpts, 'sales_style');
+        else if (stepIdx === 8) renderButtons('client-options', clientOpts, 'client');
+        else if (stepIdx === 9) renderButtons('portfolio-options', portOpts, 'portfolio');
+        else if (stepIdx === 10) renderButtons('w-options', wOpts, 'w_score');
+        else if (stepIdx === 12) renderButtons('mdrt-options', mdrtOpts, 'mdrt');
+        else if (stepIdx === 14) renderButtons('needs-options', needsOpts, 'needs');
 
         showStepScreen(stepIds[stepIdx]);
     }
@@ -877,19 +916,17 @@
             if(!p13 || !p25) valid=false;
             else { userData['p13']=parseInt(p13); userData['p25']=parseInt(p25); }
         }
-        else if(type === 'info') {
+        else if(type === 'info_contact') {
             const n = document.getElementById('userName').value;
             const b = document.getElementById('birthYear').value;
             const r = document.getElementById('region').value;
-            const g = userData['gender'];
-            if(!n || !b || !r || !g) valid=false;
-            else { userData['name']=n; userData['birth']=b; userData['region']=r; }
-        }
-        else if(type === 'contact') {
             const m = document.getElementById('p_mid').value;
             const e = document.getElementById('p_end').value;
-            if(!m || !e || m.length<4 || e.length<4) valid=false;
-            else {
+            const g = userData['gender'];
+            
+            if(!n || !b || !r || !g || !m || !e || m.length<4 || e.length<4) valid=false;
+            else { 
+                userData['name']=n; userData['birth']=b; userData['region']=r; 
                 userData['phone'] = `010-${m}-${e}`;
                 finishGame();
                 return;
@@ -897,44 +934,40 @@
         }
 
         if(!valid) {
-            alert('모든 정보를 정확히 입력해주세요.');
+            alert('정보를 정확히 입력해주세요.');
             return;
         }
         nextStep();
     }
 
     function finishGame() {
-        // Calculation Logic
         const income = userData['income'] || 0;
         let mult = 1.0;
         
-        // Multipliers
+        // Multiplier Logic
         if(userData['job_hop'] === 0) mult += 0.1;
         if(userData['job_hop'] >= 3) mult -= 0.2;
         if(userData['p13'] >= 95) mult += 0.1;
         if(userData['w_score']) mult += userData['w_score'];
         if(userData['mdrt']) mult += userData['mdrt'];
+        if(userData['license']) mult += userData['license'];
         
         let final = Math.round(income * mult * 0.5); 
         let pct = Math.round((final/income)*100);
         
         showStepScreen('step-result');
         
-        // Avatar Seed
         const genderSeed = userData['gender'] === 'M' ? 'Felix' : 'Aneka';
-        document.getElementById('res-img').src = `https://api.dicebear.com/9.x/avataaars/svg?seed=${genderSeed}&clothing=blazerAndShirt&accessories=glasses&backgroundColor=b6e3f4`;
-        
+        document.getElementById('res-img').src = `https://api.dicebear.com/9.x/avataaars/svg?seed=${genderSeed}&clothing=blazerAndShirt&accessories=glasses&backgroundColor=1f2937`;
         document.getElementById('res-name').innerText = userData['name'];
         document.getElementById('res-role').innerText = userData['position'].name.split('(')[0].trim();
         
         const rMap = {'member':'1군 선수 (팀원)', 'team_leader':'주장 (팀장)', 'branch_manager':'코치 (지점장)', 'director':'감독 (본부장)'};
         document.getElementById('res-rank-txt').innerText = rMap[userData['rank']];
         
-        // Styles
         document.getElementById('res-style').innerText = userData['sales_style'] || "Balanced";
         document.getElementById('res-specialty').innerText = userData['portfolio'] || "General";
 
-        // Animate
         let current = 0;
         const timer = setInterval(() => {
             current += Math.ceil(final / 30);
@@ -943,15 +976,14 @@
         }, 30);
         document.getElementById('finalPct').innerText = pct;
         
-        // Random Stats
         document.getElementById('res-prod').innerText = userData['premium'] >= 50 ? "A" : "B";
         document.getElementById('res-qual').innerText = userData['p13'] >= 90 ? "A+" : "B";
         document.getElementById('res-honor').innerText = userData['mdrt'] > 0 ? "YES" : "NO";
-        document.getElementById('res-act').innerText = userData['w_score'] > 0 ? "Good" : "Normal";
-        document.getElementById('res-ranking').innerText = Math.floor(Math.random()*15)+1;
         
-        document.getElementById('aiAdvice').innerText = "이 선수는 팀의 핵심 전력이 될 자질이 충분합니다. 특히 꾸준함(W)과 건전성 지표가 인상적이며, 즉시 영입을 적극 추천합니다.";
+        document.getElementById('aiAdvice').innerText = "이 선수는 탁월한 역량과 잠재력을 보유하고 있습니다. 제시된 조건(Needs)을 충족한다면 팀의 성과를 극대화할 것입니다. 영입 1순위 대상입니다.";
     }
+
+    function shareLink() { alert("리포트 주소가 복사되었습니다."); }
 </script>
 
 </body>
