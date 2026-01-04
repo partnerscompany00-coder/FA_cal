@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>영업의 전설 : 내 가치 찾기</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Dalgona/neodgm/neodgm.css">
@@ -10,13 +10,13 @@
 
     <style>
         :root {
-            /* Cohesive Retro Palette */
-            --bg-color: #202028;       /* Dark Slate */
-            --window-bg: #111111;      /* Almost Black */
-            --text-color: #f0f0f0;     /* Off White */
-            --accent-color: #fbbf24;   /* Amber/Gold */
-            --highlight-color: #3b82f6; /* Blue for special items */
+            --bg-color: #202028;
+            --window-bg: #111111;
+            --text-color: #f0f0f0;
+            --accent-color: #fbbf24;
+            --highlight-color: #3b82f6;
             --border-color: #ffffff;
+            --placeholder-color: #60a5fa; /* Light Blue for placeholders */
         }
 
         body {
@@ -29,16 +29,17 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            overscroll-behavior: none; /* Prevent pull-to-refresh on mobile */
         }
 
         /* Main Game Container */
         .game-frame {
             width: 100%;
             max-width: 480px;
-            height: 100vh;
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Mobile viewport fix */
             max-height: 900px;
             background-color: var(--bg-color);
-            /* Subtle Grid Pattern */
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -51,7 +52,7 @@
             overflow: hidden;
         }
 
-        /* Retro Window Style (Classic RPG Box) */
+        /* Retro Window Style */
         .rpg-box {
             background-color: var(--window-bg);
             border: 4px double var(--border-color);
@@ -60,18 +61,20 @@
             box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
             color: var(--text-color);
             position: relative;
+            width: 100%;
         }
 
         /* Top HUD */
         .hud {
-            padding: 12px 16px;
+            padding: 10px 16px;
             background-color: var(--window-bg);
             border-bottom: 4px double var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
-            z-index: 10;
+            z-index: 20;
+            flex-shrink: 0;
         }
         .hud-label { color: var(--accent-color); font-size: 10px; letter-spacing: 1px; display: block;}
 
@@ -81,39 +84,51 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            /* Center vertically but allow scrolling */
+            justify-content: flex-start; 
             padding: 20px;
-            padding-bottom: 160px; /* Dialogue space */
+            padding-bottom: 180px; /* Space for dialog/buttons */
             overflow-y: auto;
             position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Center content vertically in scene if possible */
+        .scene-content {
+            margin: auto 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* NPC/Character */
         .npc-container {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: center;
-            /* Floating animation */
             animation: float 3s ease-in-out infinite;
+            flex-shrink: 0;
         }
         .npc-frame {
             position: relative;
             background: #2d3748;
             border: 4px solid #fff;
             box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
-            padding: 8px;
+            padding: 4px;
         }
         .npc-bg {
             background: #4a5568;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         .npc-img {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             image-rendering: pixelated;
             filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
         }
@@ -123,9 +138,10 @@
             text-align: center;
             z-index: 5;
             padding: 20px;
+            margin: auto;
         }
         .title-main {
-            font-size: 42px;
+            font-size: 40px;
             color: var(--accent-color);
             text-shadow: 4px 4px 0 #000;
             line-height: 1.2;
@@ -140,7 +156,7 @@
             font-size: 14px;
         }
         .press-start {
-            margin-top: 60px;
+            margin-top: 50px;
             color: #fff;
             animation: blink 0.8s step-end infinite;
             font-size: 18px;
@@ -172,6 +188,7 @@
             transition: all 0.1s;
             position: relative;
             box-shadow: 2px 2px 0 #000;
+            margin-bottom: 8px;
         }
         .pixel-btn:hover, .pixel-btn:active, .pixel-btn.selected {
             background: #2d3748;
@@ -180,7 +197,6 @@
             transform: translate(-1px, -1px);
             box-shadow: 4px 4px 0 #000;
         }
-        /* Selection Indicator */
         .pixel-btn:hover::after, .pixel-btn.selected::after {
             content: '◀';
             position: absolute;
@@ -192,11 +208,22 @@
             background: #333;
             border: 2px solid #555;
             color: #999;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             font-size: 14px;
+            cursor: pointer;
+            width: 30%;
         }
-        .pixel-btn-back:hover { background: #444; color: #fff; }
+        .pixel-btn-confirm {
+            background: #1e3a8a;
+            border: 2px solid #3b82f6;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            width: 70%;
+        }
 
         /* Inputs */
         .pixel-input {
@@ -210,15 +237,43 @@
             outline: none;
             text-align: center;
             margin-bottom: 8px;
+            border-radius: 0;
         }
         .pixel-input:focus {
             border-color: var(--accent-color);
+        }
+        .pixel-input::placeholder {
+            color: var(--placeholder-color);
+            font-style: italic;
+            font-size: 14px;
+            opacity: 0.7;
         }
         .input-label {
             display: block;
             color: var(--accent-color);
             font-size: 14px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        /* Gender Buttons */
+        .gender-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .gender-btn {
+            flex: 1;
+            padding: 12px;
+            background: #000;
+            border: 2px solid #666;
+            color: #888;
+            text-align: center;
+            cursor: pointer;
+        }
+        .gender-btn.selected {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: #222;
         }
 
         /* Dialogue Box (Bottom) */
@@ -227,12 +282,12 @@
             bottom: 20px;
             left: 20px;
             right: 20px;
-            height: 130px;
+            height: 120px;
             background-color: var(--window-bg);
             border: 4px double var(--border-color);
             padding: 16px;
             z-index: 50;
-            display: none; /* Controlled by JS */
+            display: none;
         }
         .npc-nametag {
             position: absolute;
@@ -246,17 +301,17 @@
             border: 2px solid #fff;
         }
         .dialogue-text {
-            font-size: 17px;
-            line-height: 1.6;
+            font-size: 16px;
+            line-height: 1.5;
             margin-top: 5px;
         }
 
-        /* Character Cards (Grid) */
+        /* Character Cards */
         .char-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 350px;
             overflow-y: auto;
         }
         .char-card {
@@ -268,18 +323,43 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .char-card:hover {
+        .char-card:hover, .char-card.selected {
             border-color: var(--accent-color);
             background: #1a202c;
         }
-        .char-icon {
-            width: 48px;
-            height: 48px;
+        .char-thumb {
+            width: 40px;
+            height: 40px;
             margin-right: 12px;
             border: 2px solid #fff;
             background: #4a5568;
             padding: 2px;
             image-rendering: pixelated;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-bar-box {
+            width: 80%;
+            height: 20px;
+            border: 2px solid #fff;
+            margin-top: 20px;
+            padding: 2px;
+        }
+        .loading-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.2s;
         }
 
         /* Animations */
@@ -288,7 +368,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: #555; }
         
@@ -329,116 +409,115 @@
             <div class="press-start" onclick="goToCharSelect()">▶ PRESS START ◀</div>
         </div>
 
-        <!-- NPC / Character Area -->
-        <div class="npc-container hidden" id="npc-display-area">
-            <div class="npc-frame">
-                <div class="npc-bg">
-                    <img id="main-char-img" src="" alt="Character" class="npc-img">
-                </div>
-            </div>
-        </div>
-
-        <!-- Menus -->
-        
-        <!-- 1. Character Select -->
-        <div id="char-select-menu" class="menu-wrapper">
-            <div class="rpg-box">
-                <p class="text-center text-accent mb-4 border-b border-gray-600 pb-2">직업 선택 (CLASS SELECT)</p>
-                <div id="char-list" class="char-grid">
-                    <!-- JS Injected -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Choice Menu -->
-        <div id="choice-menu" class="menu-wrapper">
-            <div id="choice-buttons-container" class="flex flex-col gap-2"></div>
-            <button class="pixel-btn-back w-full mt-2" onclick="prevStep()">뒤로 가기</button>
-        </div>
-
-        <!-- 3. Input Menu -->
-        <div id="input-menu" class="menu-wrapper">
-            <div class="rpg-box">
-                <div id="input-fields" class="flex flex-col gap-4"></div>
-            </div>
-            <div class="flex gap-2 mt-2">
-                <button class="pixel-btn-back flex-1" onclick="prevStep()">뒤로</button>
-                <button class="pixel-btn flex-1 text-center" style="border-color:var(--accent-color); color:var(--accent-color);" onclick="submitInput()">결정</button>
-            </div>
-        </div>
-
-        <!-- 4. Result Menu -->
-        <div id="result-menu" class="menu-wrapper" style="max-width: 95%;">
-            <div class="rpg-box" style="max-height: 60vh; overflow-y: auto;">
-                <div class="text-center border-b border-gray-600 pb-4 mb-4">
-                    <h2 class="text-2xl text-accent mb-1">평가 리포트</h2>
-                    <p class="text-xs text-gray-500">STATUS REPORT</p>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="flex items-center bg-gray-800 p-3 mb-4 border border-gray-600">
-                    <div class="mr-4 border border-white">
-                         <img id="result-char-img" src="" class="w-16 h-16 bg-gray-700 block">
+        <div class="scene-content hidden" id="game-content">
+            <!-- NPC Area -->
+            <div class="npc-container" id="npc-display-area">
+                <div class="npc-frame">
+                    <div class="npc-bg">
+                        <img id="main-char-img" src="" alt="Character" class="npc-img">
                     </div>
-                    <div class="flex-1 text-sm">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-gray-400">이름</span>
-                            <span class="text-white" id="resName">---</span>
+                </div>
+            </div>
+
+            <!-- 1. Character Select -->
+            <div id="char-select-menu" class="menu-wrapper">
+                <div class="rpg-box">
+                    <p class="text-center text-accent mb-4 border-b border-gray-600 pb-2">직업 선택 (CLASS SELECT)</p>
+                    <div id="char-list" class="char-grid">
+                        <!-- JS Injected -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Choice Menu -->
+            <div id="choice-menu" class="menu-wrapper">
+                <div id="choice-buttons-container" class="flex flex-col gap-2"></div>
+                <button class="pixel-btn-back w-full mt-4" onclick="prevStep()">뒤로 가기</button>
+            </div>
+
+            <!-- 3. Input Menu -->
+            <div id="input-menu" class="menu-wrapper">
+                <div class="rpg-box">
+                    <div id="input-fields" class="flex flex-col gap-4"></div>
+                </div>
+                <div class="flex gap-2 mt-4 w-full">
+                    <button class="pixel-btn-back" onclick="prevStep()">뒤로</button>
+                    <button class="pixel-btn-confirm" onclick="submitInput()">확인 ▶</button>
+                </div>
+            </div>
+
+            <!-- 4. Result Menu -->
+            <div id="result-menu" class="menu-wrapper" style="max-width: 95%;">
+                <div class="rpg-box" style="max-height: 60vh; overflow-y: auto;">
+                    <div class="text-center border-b border-gray-600 pb-4 mb-4">
+                        <h2 class="text-2xl text-accent mb-1">평가 리포트</h2>
+                        <p class="text-xs text-gray-500">STATUS REPORT</p>
+                    </div>
+
+                    <!-- Info Grid -->
+                    <div class="flex items-center bg-gray-800 p-3 mb-4 border border-gray-600">
+                        <div class="mr-4 border border-white">
+                             <img id="result-char-img" src="" class="w-16 h-16 bg-gray-700 block image-pixelated">
                         </div>
-                        <div class="flex justify-between mb-1">
-                            <span class="text-gray-400">직업</span>
-                            <span class="text-accent" id="resCharClass">---</span>
+                        <div class="flex-1 text-sm">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-400">이름</span>
+                                <span class="text-white" id="resName">---</span>
+                            </div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-400">직업</span>
+                                <span class="text-accent" id="resCharClass">---</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">직급</span>
+                                <span class="text-white" id="resRank">---</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score -->
+                    <div class="text-center p-4 bg-gray-800 border border-gray-600 mb-4">
+                        <p class="text-xs text-accent mb-1">추정 이적료 (BOUNTY)</p>
+                        <div class="text-3xl text-white mb-1">
+                            <span id="finalPrice">0</span> <span class="text-lg text-gray-400">만원</span>
+                        </div>
+                        <p class="text-xs text-gray-500">(연봉 대비 <span id="finalPct" class="text-white">0</span>% 가치)</p>
+                    </div>
+
+                    <!-- Rank -->
+                    <div class="bg-gray-900 p-2 text-center text-xs mb-4 border border-gray-700">
+                        <span class="text-gray-400">전체 랭킹:</span> 상위 <span class="text-accent font-bold" id="rankingPercent">0</span>%
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="text-sm mb-4 space-y-2 border-t border-gray-600 pt-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">⚔️ 생산성</span>
+                            <span class="text-white" id="resProd">---</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">직급</span>
-                            <span class="text-white" id="resRank">---</span>
+                            <span class="text-gray-400">🛡️ 건전성</span>
+                            <span class="text-white" id="resQual">---</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">⚡ 활동성</span>
+                            <span class="text-white" id="resAct">---</span>
                         </div>
                     </div>
-                </div>
 
-                <!-- Score -->
-                <div class="text-center p-4 bg-gray-800 border border-gray-600 mb-4">
-                    <p class="text-xs text-accent mb-1">추정 이적료 (BOUNTY)</p>
-                    <div class="text-3xl text-white mb-1">
-                        <span id="finalPrice">0</span> <span class="text-lg text-gray-400">만원</span>
-                    </div>
-                    <p class="text-xs text-gray-500">(연봉 대비 <span id="finalPct" class="text-white">0</span>% 가치)</p>
-                </div>
-
-                <!-- Rank -->
-                <div class="bg-gray-900 p-2 text-center text-xs mb-4 border border-gray-700">
-                    <span class="text-gray-400">전체 랭킹:</span> 상위 <span class="text-accent font-bold" id="rankingPercent">0</span>%
-                </div>
-
-                <!-- Stats -->
-                <div class="text-sm mb-4 space-y-2 border-t border-gray-600 pt-3">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">⚔️ 생산성</span>
-                        <span class="text-white" id="resProd">---</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">🛡️ 건전성</span>
-                        <span class="text-white" id="resQual">---</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">⚡ 활동성</span>
-                        <span class="text-white" id="resAct">---</span>
+                    <!-- Advice -->
+                    <div class="text-sm bg-gray-800 p-3 border-l-4 border-accent text-gray-300 leading-relaxed">
+                        <strong class="block text-accent mb-1">이장님의 조언</strong>
+                        <span id="aiAdvice">...</span>
                     </div>
                 </div>
 
-                <!-- Advice -->
-                <div class="text-sm bg-gray-800 p-3 border-l-4 border-accent text-gray-300 leading-relaxed">
-                    <strong class="block text-accent mb-1">이장님의 조언</strong>
-                    <span id="aiAdvice">...</span>
+                <div class="flex gap-2 mt-2">
+                    <button class="pixel-btn text-center" style="padding:10px; font-size:14px;" onclick="shareLink()">결과 저장</button>
+                    <button class="pixel-btn text-center" style="padding:10px; font-size:14px;" onclick="location.reload()">처음으로</button>
                 </div>
-            </div>
-
-            <div class="flex gap-2 mt-2">
-                <button class="pixel-btn text-center" style="padding:10px;" onclick="shareLink()">결과 저장</button>
-                <button class="pixel-btn text-center" style="padding:10px;" onclick="location.reload()">처음으로</button>
             </div>
         </div>
-
     </div>
 
     <!-- Dialogue Box -->
@@ -448,24 +527,81 @@
         <span class="text-accent absolute bottom-4 right-4 animate-bounce">▼</span>
     </div>
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="text-center">
+            <h2 class="text-2xl text-accent mb-4 animate-pulse">데이터 분석 중...</h2>
+            <p class="text-sm text-gray-400 mb-2" id="loading-text">능력치 스캔 중...</p>
+            <div class="loading-bar-box">
+                <div id="loading-bar" class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // --- Configuration ---
-    // Characters (10th Century Medieval Fantasy Style - No Modern/Dark Skin)
-    const characters = [
-        { id: 'knight', name: '기사', desc: '기본기 탄탄! 성실함으로 신뢰를 쌓는 정통파 영업', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Arthur&clothing=plate&skinColor=ecad80' },
-        { id: 'barbarian', name: '바바리안', desc: '거절은 없다! 망설임 없이 계약을 따내는 클로징 마스터', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Conan&clothing=layer&skinColor=ecad80' },
-        { id: 'archer', name: '궁수', desc: '보이지 않아도 적중! 전화 한 통으로 마음을 훔치는 TA 고수', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Robin&clothing=jacket&hat=hat&skinColor=f2d3b1' },
-        { id: 'wizard', name: '마법사', desc: '판을 읽는 눈! 팀의 방향을 제시하는 전략가 리더', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Merlin&clothing=robe&skinColor=f2d3b1' },
-        { id: 'fairy', name: '요정', desc: '섬세한 케어! 고객과 동료의 마음을 치유하는 서포터', img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Tinker&clothing=collarAndSweater&skinColor=f2d3b1' }
-    ];
-
-    // --- State ---
+    // --- Data & State ---
     let currentStep = 0;
     let userData = {};
     let subStepQueue = []; 
     let visitorCount = parseInt(localStorage.getItem('fa_retro_users') || '342');
+
+    // Characters (Updated Descriptions & Images)
+    // Using 'adventurer' style but ensuring 16-bit feel via CSS filter.
+    // Images are smaller in UI as requested.
+    const characters = [
+        { 
+            id: 'knight', name: '기사', 
+            desc: '[루틴형 영업자] 매일 정해진 스케줄로 고객과 신뢰를 쌓는 성실의 아이콘.', 
+            img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Arthur&clothing=plate&skinColor=ecad80' 
+        },
+        { 
+            id: 'barbarian', name: '바바리안', 
+            desc: '[클로징 마스터] 거절은 없다! 망설이는 고객도 단번에 설득하는 해결사.', 
+            img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Conan&clothing=layer&skinColor=ecad80' 
+        },
+        { 
+            id: 'archer', name: '궁수', 
+            desc: '[TA 고수] 보이지 않는 곳에서도 니즈를 정확히 타격하는 명사수.', 
+            img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Robin&clothing=jacket&hat=hat&skinColor=f2d3b1' 
+        },
+        { 
+            id: 'wizard', name: '마법사', 
+            desc: '[조직 리더] 전체 판을 읽고 팀의 방향을 제시하는 지혜로운 전략가.', 
+            img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Merlin&clothing=robe&skinColor=f2d3b1' 
+        },
+        { 
+            id: 'fairy', name: '요정', 
+            desc: '[영업 서포터] 섬세한 케어로 동료와 고객의 마음을 치유하는 조력자.', 
+            img: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Tinker&clothing=collarAndSweater&skinColor=f2d3b1' 
+        }
+    ];
+
+    // Steps (Single Question per step)
+    const baseSteps = [
+        { type: 'choice', text: "자네는 어느 마을(소속)에서 왔는가?", options: [ {label:"GA (법인대리점)", value:"ga", key:"affiliation"}, {label:"원수사 (생명)", value:"life", key:"affiliation"}, {label:"원수사 (손해)", value:"nonlife", key:"affiliation"} ] },
+        { type: 'choice', text: "현재 자네의 직업(직급)은 무엇인고?", options: [ {label:"팀원 (FA/FC)", value:"member", key:"rank"}, {label:"팀장 (SM/FM)", value:"team_leader", key:"rank"}, {label:"지점장 (BM)", value:"branch_manager", key:"rank"}, {label:"본부장/임원", value:"director", key:"rank"} ] },
+        { type: 'input', text: "자네가 이끄는 동료(조직원)는 몇 명인가?", inputs: [{ id: 'team_size', label: '조직원 수 (명)', type: 'number', placeholder: '0' }] },
+        { type: 'input', text: "지금까지 쌓아온 경력(Level)은?", inputs: [{ id: 'career', label: '경력 (년)', type: 'number', placeholder: '3' }] },
+        { type: 'input', text: "지난 모험에서 얻은 전리품(연봉)은?", inputs: [{ id: 'income', label: '직전 연봉 (만원)', type: 'number', placeholder: '5000' }] },
+        { type: 'choice', text: "최근 3년 내에 길드를 옮긴 적이 있는가?", options: [ {label:"이직 없음", value:0, key:"job_hop"}, {label:"1회", value:1, key:"job_hop"}, {label:"2회", value:2, key:"job_hop"}, {label:"3회 이상", value:3, key:"job_hop"} ] },
+        { type: 'choice', text: "주간 연속 청약(W) 경험이 있나?", options: [ {label:"기록 없음", value:0, key:"w_score"}, {label:"1W (10주 이상)", value:0.03, key:"w_score"}, {label:"1W (20주 이상)", value:0.05, key:"w_score"}, {label:"2W (50주 이상)", value:0.10, key:"w_score"}, {label:"3W (50주 이상)", value:0.15, key:"w_score"} ] },
+        { type: 'input', text: "평균 공격 횟수(체결 건수)는?", inputs: [{ id: 'count', label: '월 평균 건수', type: 'number', placeholder: '4.5' }] },
+        { type: 'input', text: "평균 공격력(보험료)은?", inputs: [{ id: 'premium', label: '월 평균 보험료 (만원)', type: 'number', placeholder: '50' }] },
+        { type: 'choice', text: "어떤 검술(영업 방식)을 주로 사용하는가?", options: [ {label:"개척 영업 (맨땅)", value:0.1, key:"sales_style"}, {label:"지인/소개 (인맥)", value:0.05, key:"sales_style"}, {label:"DB 영업 (지급)", value:-0.05, key:"sales_style"} ] },
+        { type: 'choice', text: "주무기(주력 상품)는 무엇인가?", options: [ {label:"보장성 (암/종신)", value:0.1, key:"portfolio"}, {label:"저축성 (연금)", value:0, key:"portfolio"}, {label:"자동차/화재", value:-0.05, key:"portfolio"}, {label:"복합 (기타)", value:0, key:"portfolio"} ] },
+        { type: 'input', text: "방패(유지율) 상태를 점검하겠네.", inputs: [ { id: 'persistency13', label: '13회차 유지율 (%)', type: 'number', placeholder: '90' }, { id: 'persistency25', label: '25회차 유지율 (%)', type: 'number', placeholder: '80' } ] },
+        { type: 'choice', text: "명예의 전당(MDRT) 경험이 있는가?", options: [ {label:"없음", value:0, key:"mdrt"}, {label:"MDRT", value:0.1, key:"mdrt"}, {label:"COT", value:0.15, key:"mdrt"}, {label:"TOT", value:0.2, key:"mdrt"} ] },
+        { type: 'choice', text: "현재 길드(조직)에 만족하는가?", options: [ {label:"매우 만족", value:'very_sat', key:'satisfaction'}, {label:"대체로 만족", value:'sat', key:'satisfaction'}, {label:"보통", value:'avg', key:'satisfaction'}, {label:"불만족", value:'unsat', key:'satisfaction'}, {label:"매우 불만족", value:'very_unsat', key:'satisfaction'} ] },
+        { type: 'input', text: "모험가 이름을 알려주게.", inputs: [{ id: 'userName', label: '이름 (실명)', type: 'text', placeholder: '홍길동' }] },
+        { type: 'input', text: "언제 태어났는가?", inputs: [{ id: 'birthYear', label: '출생년도 (예: 1990)', type: 'number', placeholder: '1990' }] },
+        { type: 'gender', text: "성별은 무엇인가?", key: 'gender' },
+        { type: 'input', text: "주로 활동하는 지역은?", inputs: [{ id: 'region', label: '활동 지역', type: 'text', placeholder: '서울' }] },
+        { type: 'input', subtype: 'phone', text: "마지막으로 비둘기(연락처)를 남겨주게.", inputs: [] }
+    ];
+
+    let stepsQueue = [];
 
     // --- Init ---
     window.onload = function() {
@@ -502,13 +638,24 @@
             document.getElementById(mId).classList.remove('active');
         });
         if(id) document.getElementById(id).classList.add('active');
+        
+        // Scroll adjustment for inputs on mobile
+        if(id === 'input-menu') {
+            const container = document.querySelector('.scene');
+            // Allow some time for layout
+            setTimeout(() => {
+                const inputEl = document.querySelector('.pixel-input');
+                if(inputEl) inputEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }, 100);
+        }
     }
 
     // --- Game Logic ---
     function goToCharSelect() {
         document.getElementById('game-title').style.display = 'none';
+        document.getElementById('game-content').classList.remove('hidden');
         
-        // NPC: Village Elder (Medieval Style)
+        // NPC: Village Elder
         document.getElementById('npc-display-area').classList.remove('hidden');
         document.getElementById('main-char-img').src = "https://api.dicebear.com/9.x/adventurer/svg?seed=Elder&clothing=robe&skinColor=f2d3b1";
         document.getElementById('npc-name').innerText = "이장님";
@@ -520,10 +667,10 @@
                 const card = document.createElement('div');
                 card.className = 'char-card';
                 card.innerHTML = `
-                    <img src="${char.img}" class="char-icon">
-                    <div class="flex-1">
-                        <h4 class="text-accent text-sm font-bold mb-1">${char.name}</h4>
-                        <p class="text-xs text-gray-400">${char.desc}</p>
+                    <img src="${char.img}" class="char-thumb">
+                    <div class="char-info">
+                        <h4>${char.name}</h4>
+                        <p>${char.desc}</p>
                     </div>
                 `;
                 card.onclick = () => selectCharacter(char);
@@ -537,28 +684,9 @@
         userData['character'] = char;
         // Update NPC to Selected Character
         document.getElementById('main-char-img').src = char.img;
-        document.getElementById('npc-name').innerText = "나 (" + char.name + ")";
+        document.getElementById('npc-name').innerText = "나 (" + char.name.split(' ')[0] + ")";
         startGame();
     }
-
-    // Steps
-    const baseSteps = [
-        { type: 'choice', text: "자네는 어느 마을(소속)에서 왔는가?", options: [ {label:"GA (법인대리점)", value:"ga", key:"affiliation"}, {label:"원수사 (생명)", value:"life", key:"affiliation"}, {label:"원수사 (손해)", value:"nonlife", key:"affiliation"} ] },
-        { type: 'choice', text: "현재 자네의 직업(직급)은 무엇인고?", options: [ {label:"팀원 (FA/FC)", value:"member", key:"rank"}, {label:"팀장 (SM/FM)", value:"team_leader", key:"rank"}, {label:"지점장 (BM)", value:"branch_manager", key:"rank"}, {label:"본부장/임원", value:"director", key:"rank"} ] },
-        { type: 'input', text: "자네가 이끄는 동료(조직원)는 몇 명인가?", inputs: [{ id: 'team_size', label: '조직원 수 (명)', type: 'number', placeholder: '0' }] },
-        { type: 'input', text: "전투 기록(경력/연봉)을 보여주게.", inputs: [ { id: 'career', label: '경력 (년)', type: 'number', placeholder: '3' }, { id: 'income', label: '직전 연봉 (만원)', type: 'number', placeholder: '5000' }, { id: 'job_hop', label: '최근 3년 이직 횟수', type: 'select', options: ['0회', '1회', '2회', '3회 이상'], values: [0, 1, 2, 3] } ] },
-        { type: 'choice', text: "주간 연속 청약(W) 경험이 있나?", options: [ {label:"기록 없음", value:0, key:"w_score"}, {label:"1W (10주 이상)", value:0.03, key:"w_score"}, {label:"1W (20주 이상)", value:0.05, key:"w_score"}, {label:"2W (50주 이상)", value:0.10, key:"w_score"}, {label:"3W (50주 이상)", value:0.15, key:"w_score"} ] },
-        { type: 'input', text: "자네의 평소 공격력(실적)은 어느 정도인가?", inputs: [ { id: 'count', label: '월 평균 건수', type: 'number', placeholder: '4.5' }, { id: 'premium', label: '월 평균 보험료 (만원)', type: 'number', placeholder: '50' } ] },
-        { type: 'choice', text: "주로 어떤 방식으로 영업을 하는가?", options: [ {label:"개척 영업 (맨땅)", value:0.1, key:"sales_style"}, {label:"지인/소개 (인맥)", value:0.05, key:"sales_style"}, {label:"DB 영업 (지급)", value:-0.05, key:"sales_style"} ] },
-        { type: 'choice', text: "주무기(주력 상품)는 무엇인가?", options: [ {label:"보장성 (암/종신)", value:0.1, key:"portfolio"}, {label:"저축성 (연금)", value:0, key:"portfolio"}, {label:"자동차/화재", value:-0.05, key:"portfolio"}, {label:"복합 (기타)", value:0, key:"portfolio"} ] },
-        { type: 'input', text: "방패(유지율) 상태를 점검하겠네.", inputs: [ { id: 'persistency13', label: '13회차 유지율 (%)', type: 'number', placeholder: '90' }, { id: 'persistency25', label: '25회차 유지율 (%)', type: 'number', placeholder: '80' } ] },
-        { type: 'choice', text: "명예의 전당(MDRT)에 오른 적이 있는가?", options: [ {label:"없음", value:0, key:"mdrt"}, {label:"MDRT", value:0.1, key:"mdrt"}, {label:"COT", value:0.15, key:"mdrt"}, {label:"TOT", value:0.2, key:"mdrt"} ] },
-        { type: 'choice', text: "현재 머물고 있는 길드(조직)에 만족하는가?", options: [ {label:"매우 만족", value:'very_sat', key:'satisfaction'}, {label:"대체로 만족", value:'sat', key:'satisfaction'}, {label:"보통", value:'avg', key:'satisfaction'}, {label:"불만족", value:'unsat', key:'satisfaction'}, {label:"매우 불만족", value:'very_unsat', key:'satisfaction'} ] },
-        { type: 'input', text: "이제 모험가 명부에 등록하겠네.", inputs: [ { id: 'userName', label: '이름 (실명)', type: 'text', placeholder: '홍길동' }, { id: 'birthYear', label: '출생년도', type: 'number', placeholder: '1990' }, { id: 'gender', label: '성별', type: 'select', options: ['남성', '여성'], values: ['M', 'F'] }, { id: 'region', label: '활동 지역', type: 'text', placeholder: '서울' } ] },
-        { type: 'input', subtype: 'phone', text: "비둘기(연락처)를 남겨주게.", inputs: [] }
-    ];
-
-    let stepsQueue = [];
 
     function startGame() {
         stepsQueue = [...baseSteps];
@@ -594,13 +722,42 @@
                 container.appendChild(btn);
             });
             showMenu('choice-menu');
-        } else {
+        } 
+        else if (step.type === 'gender') {
+            const container = document.getElementById('input-fields');
+            container.innerHTML = '';
+            
+            const label = document.createElement('label');
+            label.className = 'input-label';
+            label.innerText = "성별";
+            container.appendChild(label);
+            
+            const group = document.createElement('div');
+            group.className = 'gender-btn-group';
+            
+            ['남성', '여성'].forEach(g => {
+                const btn = document.createElement('div');
+                btn.className = 'gender-btn';
+                btn.innerText = g;
+                btn.onclick = () => {
+                    document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    userData['gender'] = (g === '남성' ? 'M' : 'F');
+                };
+                group.appendChild(btn);
+            });
+            container.appendChild(group);
+            
+            showMenu('input-menu');
+        }
+        else {
             const container = document.getElementById('input-fields');
             container.innerHTML = '';
             if(step.subtype === 'phone') {
                 container.innerHTML = `
+                    <label class="input-label">연락처</label>
                     <div class="flex gap-2">
-                        <input type="text" value="010" readonly class="pixel-input w-1/4 text-gray-500 border-gray-600">
+                        <input type="text" value="010" readonly class="pixel-input w-1/4 text-gray-500 border-gray-600" style="background:#222;">
                         <input type="tel" id="p_mid" class="pixel-input w-1/3" maxlength="4" placeholder="1234">
                         <input type="tel" id="p_end" class="pixel-input w-1/3" maxlength="4" placeholder="5678">
                     </div>`;
@@ -660,7 +817,10 @@
     function submitInput() {
         const step = stepsQueue[currentStep];
         let valid = true;
-        if(step.subtype === 'phone') {
+
+        if (step.type === 'gender') {
+            if(!userData['gender']) { alert("성별을 선택해주세요."); valid = false; }
+        } else if(step.subtype === 'phone') {
             const m = document.getElementById('p_mid').value;
             const e = document.getElementById('p_end').value;
             if(m.length < 4 || e.length < 4) { alert('연락처를 확인해주세요.'); return; }
@@ -681,31 +841,56 @@
     }
 
     function prevStep() {
-        if(currentStep > 0) {
+        if (currentStep > 0) {
             currentStep--;
             processStep();
         } else {
-            // Back to char select
             goToCharSelect();
         }
     }
 
     function finishGame() {
         showMenu(null);
-        document.getElementById('npc-display-area').classList.add('hidden'); // Hide Avatar
-        document.getElementById('npc-name').innerText = "이장님"; 
+        document.getElementById('npc-display-area').classList.add('hidden'); 
+        
+        // Show Loading
+        const loading = document.getElementById('loading-screen');
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        loading.style.display = 'flex';
+        
+        let progress = 0;
+        const msgs = ["능력치 분석 중...", "길드 데이터 대조 중...", "현상금 산정 중...", "리포트 작성 중..."];
+        
+        const interval = setInterval(() => {
+            progress += 5;
+            loadingBar.style.width = progress + '%';
+            if (progress % 25 === 0) loadingText.innerText = msgs[progress/25 - 1] || "완료!";
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                loading.style.display = 'none';
+                showResult();
+            }
+        }, 100);
+    }
 
-        // Calc Logic
+    function showResult() {
         const income = parseFloat(userData['income']) || 0;
         let mult = 1;
-        // Simple logic placeholder
         if(userData['w_score'] > 0) mult += 0.2;
         if(userData['mdrt'] > 0) mult += 0.3;
         
-        let final = Math.round(income * mult * 0.5); // Base formula
+        let final = Math.round(income * mult * 0.5); 
         let pct = Math.round((final/income)*100);
 
-        typeText("이것이 자네가 얻은 전설의 평가서라네!", () => {
+        // Reset NPC for result if needed, or hide
+        // Let's show Elder again
+        document.getElementById('npc-display-area').classList.remove('hidden');
+        document.getElementById('main-char-img').src = "https://api.dicebear.com/9.x/pixel-art/svg?seed=VillageElder";
+        document.getElementById('npc-name').innerText = "이장님";
+
+        typeText("분석이 끝났네. 자네의 전설적인 가치를 확인하게!", () => {
             showMenu('result-menu');
             document.getElementById('resName').innerText = userData['userName'];
             const ranks = {'member':'팀원', 'team_leader':'팀장', 'branch_manager':'지점장', 'director':'본부장'};
@@ -713,16 +898,23 @@
             document.getElementById('resCharClass').innerText = userData['character'].name;
             document.getElementById('result-char-img').src = userData['character'].img;
             
-            document.getElementById('finalPrice').innerText = final.toLocaleString();
-            document.getElementById('finalPct').innerText = pct;
-            
-            // Random stats
-            document.getElementById('resProd').innerText = "탁월 (A)";
-            document.getElementById('resQual').innerText = "안정 (B+)";
-            document.getElementById('resAct').innerText = "우수 (A)";
+            // Stats (Mock logic)
+            const premium = parseInt(userData['premium']) || 0;
+            document.getElementById('resProd').innerText = premium >= 50 ? "탁월 (S)" : (premium >= 30 ? "우수 (A)" : "보통 (B)");
+            document.getElementById('resQual').innerText = "안정 (A)"; // Placeholder
+            document.getElementById('resAct').innerText = "활발 (A)";   // Placeholder
             
             document.getElementById('rankingPercent').innerText = Math.floor(Math.random() * 10) + 1;
             document.getElementById('aiAdvice').innerText = "자네는 전설이 될 자질이 충분하네. 더 넓은 세상으로 나아가게!";
+
+            // Count Animation
+            let current = 0;
+            const timer = setInterval(() => {
+                current += Math.ceil(final / 30);
+                if(current >= final) { current = final; clearInterval(timer); }
+                document.getElementById('finalPrice').innerText = current.toLocaleString();
+            }, 30);
+            document.getElementById('finalPct').innerText = pct;
         });
     }
 
