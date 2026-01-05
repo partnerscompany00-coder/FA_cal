@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MANAGER OF SALES : 스카우팅 리포트</title>
+    <title>SUPER SALES KART : 3D</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --fm-bg: #1e1e24;       /* Deep Grey/Black */
-            --fm-sidebar: #2b2b36;  /* Sidebar Grey */
-            --fm-accent: #8b5cf6;   /* FM Purple */
-            --fm-text: #e2e8f0;     /* White/Grey Text */
-            --fm-green: #10b981;    /* Attribute Green */
-            --fm-red: #ef4444;      /* Alert Red */
-            --fm-blue: #3b82f6;     /* Button Blue */
-            --fm-gold: #f59e0b;     /* Star Rating Gold */
+            /* Mario Kart Style Palette */
+            --kart-blue: #009dfd;
+            --kart-red: #ea0012;
+            --kart-yellow: #fff300;
+            --kart-green: #37d300;
+            --kart-dark: #121212;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
         }
 
         body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #111;
-            color: var(--fm-text);
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #2c3e50;
+            color: #333;
             overflow-x: hidden;
             display: flex;
             justify-content: center;
@@ -33,960 +34,526 @@
             overscroll-behavior: none;
         }
 
-        /* Main Game Container */
-        .fm-frame {
+        /* 3D App Frame */
+        .kart-frame {
             width: 100%;
             max-width: 480px;
-            height: 100dvh; /* Mobile viewport fix */
+            height: 100dvh;
             max-height: 900px;
-            background-color: var(--fm-bg);
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%); /* 밝은 하늘색 배경 */
             position: relative;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             overflow: hidden;
+            border: 4px solid #fff;
+            border-radius: 24px;
         }
 
-        /* Top Header */
-        .fm-header {
-            background-color: var(--fm-sidebar);
-            border-bottom: 1px solid #444;
-            padding: 12px 16px;
+        /* Racing Track (Road) Background */
+        .road-bg {
+            position: absolute;
+            bottom: -20%; left: -50%; width: 200%; height: 60%;
+            background-color: #444; /* 아스팔트 색상 */
+            background-image: 
+                linear-gradient(90deg, transparent 49%, #fff 50%, transparent 51%), /* 중앙선 */
+                repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.1) 21px, rgba(255,255,255,0.1) 40px);
+            transform: perspective(500px) rotateX(60deg);
+            animation: roadMove 1s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+        
+        /* Road center line dashed effect */
+        .road-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%; width: 10px; height: 100%;
+            background: repeating-linear-gradient(to bottom, #fff, #fff 40px, transparent 40px, transparent 80px);
+            transform: translateX(-50%);
+        }
+
+        @keyframes roadMove {
+            from { background-position: 0 0; }
+            to { background-position: 0 80px; }
+        }
+
+        /* HUD */
+        .hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 20;
-            flex-shrink: 0;
+            padding: 15px 20px;
+            z-index: 50;
+            background: rgba(0, 157, 253, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255,255,255,0.5);
+            color: white;
         }
-        .header-title {
-            font-weight: 800;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .header-date {
-            font-size: 12px;
-            color: #9ca3af;
-            background: rgba(255,255,255,0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
+        .lap-badge {
+            font-family: 'Fredoka', sans-serif;
+            background: var(--kart-red);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            box-shadow: 0 4px 0 #990000;
         }
 
-        /* Main Scene Content */
+        /* Scene Area */
         .scene {
             flex: 1;
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            padding-bottom: 100px; /* Space for message box */
+            padding-bottom: 80px;
             overflow-y: auto;
-            position: relative;
-            scrollbar-width: thin;
-            scrollbar-color: #555 #222;
+            scrollbar-width: none;
+            width: 100%;
         }
-        .scene.center-content { justify-content: center; }
+        .scene::-webkit-scrollbar { display: none; }
+        .center-scene { justify-content: center; }
 
         /* Intro Screen */
-        .intro-screen {
-            text-align: center;
-            width: 100%;
-        }
         .intro-logo {
-            font-size: 32px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 44px;
+            line-height: 1;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 4px 0 var(--kart-blue), 0 8px 0 var(--kart-dark);
+            transform: skewY(-5deg) rotate(-2deg);
+            margin-bottom: 30px;
+        }
+        .logo-sub {
+            background: var(--kart-yellow);
+            color: #000;
+            padding: 8px 24px;
+            border-radius: 50px;
             font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #fff, #999);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            box-shadow: 0 5px 0 #e6a700;
+            transform: skewY(-5deg);
+            margin-bottom: 50px;
         }
-        .intro-sub {
-            color: var(--fm-accent);
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-        }
-        .start-btn {
-            background: var(--fm-red);
+        
+        /* 3D Button */
+        .kart-btn {
+            background: linear-gradient(to bottom, #ff5e3a 0%, #ff2a00 100%);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50px;
             color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 24px;
             font-weight: 700;
-            padding: 14px 40px;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 #991b1b;
-        }
-        .start-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
-
-        /* Menus */
-        .menu-wrapper {
-            width: 100%;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .menu-wrapper.active { display: flex; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* FM Box Style */
-        .fm-box {
-            background: #2b2b36;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 0;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-        .fm-box-header {
-            background: #363642;
-            padding: 10px 15px;
-            border-bottom: 1px solid #444;
-            font-size: 13px;
-            font-weight: 700;
-            color: #d1d5db;
+            padding: 16px 60px;
+            box-shadow: 0 6px 0 #cc2200, 0 15px 30px rgba(0,0,0,0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+            cursor: pointer;
             text-transform: uppercase;
-            display: flex;
-            justify-content: space-between;
         }
-        .fm-box-content {
-            padding: 15px;
+        .kart-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #cc2200, 0 5px 10px rgba(0,0,0,0.3);
         }
 
-        /* Position Selection Cards */
-        .pos-card {
-            background: #373745;
-            border: 1px solid #4b5563;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: 0.15s;
-        }
-        .pos-card:hover, .pos-card.active {
-            background: #4b5563;
-            border-color: var(--fm-green);
-        }
-        .pos-icon {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: #1f2937;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-weight: bold;
-            font-size: 12px;
-            border: 2px solid #555;
-        }
-        .pos-fw { border-color: #ef4444; color: #ef4444; }
-        .pos-mf { border-color: #3b82f6; color: #3b82f6; }
-        .pos-df { border-color: #10b981; color: #10b981; }
-        .pos-mgr { border-color: #f59e0b; color: #f59e0b; }
-        .pos-info h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-        .pos-info p { font-size: 11px; color: #9ca3af; }
-
-        /* Buttons */
-        .fm-btn {
-            display: block;
+        /* Glass Panel */
+        .glass-panel {
+            background: var(--glass-bg);
+            border-radius: 24px;
+            padding: 24px;
             width: 100%;
-            background: #373745;
-            color: #fff;
-            border: 1px solid #555;
-            padding: 12px;
-            text-align: left;
-            font-size: 14px;
-            border-radius: 4px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: 0.1s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
         }
-        .fm-btn:hover, .fm-btn.active {
-            background: #4b5563;
-            border-color: var(--fm-green);
-            color: #fff;
+        .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+        .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
+
+        /* Racer Cards */
+        .racer-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
+        .racer-card {
+            background: white; border-radius: 16px; padding: 12px;
+            display: flex; align-items: center; cursor: pointer;
+            border: 2px solid #eee; box-shadow: 0 4px 0 #ddd;
+            transition: all 0.2s;
         }
-        .fm-btn-back {
-            background: transparent;
-            color: #9ca3af;
-            padding: 10px;
-            text-align: center;
-            font-size: 13px;
-            border: 1px solid #444;
-            border-radius: 4px;
+        .racer-card:hover, .racer-card.selected {
+            background: #fff9c4; border-color: var(--kart-yellow); transform: translateY(-2px);
+            box-shadow: 0 6px 0 #fbc02d;
         }
-        .fm-btn-confirm {
-            background: var(--fm-red);
-            color: #fff;
-            font-weight: 700;
-            padding: 12px;
-            text-align: center;
-            border-radius: 4px;
-            border: none;
-            box-shadow: 0 2px 0 #991b1b;
+        .racer-img-box {
+            width: 48px; height: 48px; border-radius: 50%; background: #f0f0f0; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
         }
-        .fm-btn-confirm:active { transform: translateY(2px); box-shadow: none; }
+        .racer-info h4 { font-weight: 800; color: #333; font-size: 15px; }
+        .racer-info p { font-size: 11px; color: #777; }
+
+        /* Pixel Buttons */
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: white; border: 2px solid #eee;
+            padding: 14px; margin-bottom: 10px;
+            font-size: 15px; font-weight: 700; border-radius: 12px;
+            box-shadow: 0 4px 0 #ddd; transition: 0.1s;
+            position: relative;
+        }
+        .option-btn.selected { background: #fff9c4; border-color: var(--kart-yellow); box-shadow: 0 4px 0 #fbc02d; }
+        .option-btn.selected::after { content: '🏁'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+        .option-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .nav-btn {
+            flex: 1; padding: 14px; text-align: center; border-radius: 16px;
+            font-weight: 800; font-size: 16px; transition: transform 0.1s;
+        }
+        .btn-back { background: #f1f5f9; color: #64748b; box-shadow: 0 4px 0 #cbd5e1; }
+        .btn-next { background: var(--kart-green); color: white; box-shadow: 0 4px 0 #16a34a; }
+        .nav-btn:active { transform: translateY(4px); box-shadow: none; }
 
         /* Inputs */
-        .fm-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #9ca3af;
-            margin-bottom: 6px;
+        .kart-input {
+            width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px;
+            font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #fff;
         }
-        .fm-input {
-            width: 100%;
-            background: #1f1f24;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 4px;
-            outline: none;
-            transition: 0.2s;
-        }
-        .fm-input:focus { border-color: var(--fm-accent); background: #25252b; }
-        .fm-input::placeholder { color: #555; font-style: italic; }
+        .input-label { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 6px; display: block; text-align: center; }
 
-        /* Gender Select */
-        .gender-grid { display: flex; gap: 8px; margin-bottom: 12px; }
-        .gender-opt { 
-            flex: 1; padding: 10px; background: #25252b; border: 1px solid #444; 
-            text-align: center; border-radius: 4px; cursor: pointer; color: #9ca3af; font-size: 13px;
-        }
-        .gender-opt.active { border-color: var(--fm-accent); color: #fff; background: #373745; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
 
-        /* Message Box (Compact) */
-        .message-box {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 70px;
-            background: rgba(30, 30, 36, 0.95);
-            border-top: 1px solid #444;
-            padding: 8px 16px;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            transition: transform 0.3s ease;
-        }
-        /* Hide when keyboard active logic */
-        .message-box.hidden-kb { transform: translateY(100%); }
-
-        .msg-avatar {
-            width: 36px; height: 36px;
-            background: #555;
-            border-radius: 50%;
-            margin-right: 12px;
-            overflow: hidden;
-            border: 2px solid #777;
-            flex-shrink: 0;
-        }
-        .msg-content { flex: 1; }
-        .msg-name { font-size: 10px; font-weight: 700; color: var(--fm-green); margin-bottom: 2px; text-transform: uppercase; }
-        .msg-text { font-size: 12px; line-height: 1.3; color: #e2e8f0; }
-
-        /* Result Styles */
-        .result-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .res-photo {
-            width: 60px; height: 60px;
-            background: #ccc;
-            margin-right: 15px;
-            border: 1px solid #fff;
-            object-fit: cover;
-        }
-        .res-info h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 2px; }
-        .res-info p { font-size: 13px; color: var(--fm-green); font-weight: 600; text-transform: uppercase; }
-        
-        .stat-table { width: 100%; font-size: 13px; border-collapse: collapse; }
-        .stat-table td { padding: 6px 0; border-bottom: 1px solid #333; }
-        .stat-label { color: #9ca3af; }
-        .stat-val { text-align: right; font-weight: 700; color: #fff; }
-        
-        .val-box {
-            background: #374151;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-            margin: 15px 0;
-            border-left: 4px solid var(--fm-gold);
-        }
-        .val-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .val-amount { font-size: 28px; font-weight: 800; color: #fff; }
-        .val-sub { font-size: 12px; color: #d1d5db; font-weight: 500; }
-
-        @keyframes blink { 50% { opacity: 0; } }
+        .chart-box { position: relative; height: 250px; width: 100%; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<div class="fm-frame">
-    
-    <!-- Header -->
-    <div class="fm-header">
-        <div class="header-title">
-            <i class="ph-fill ph-trophy text-lg text-yellow-400"></i> MANAGER OF SALES
+<div class="kart-frame">
+    <div class="road-bg"></div>
+
+    <!-- HUD -->
+    <div class="hud">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-100">LAP</span>
+            <span class="lap-badge" id="stepIndicator">START</span>
         </div>
-        <div class="header-date" id="currentDate">2026.01.05</div>
+        <div class="flex items-center gap-2">
+            <i class="ph-fill ph-coin text-yellow-300"></i>
+            <span class="font-black text-white" id="scoreDisplay">000</span>
+        </div>
     </div>
 
-    <!-- Scene -->
-    <div class="scene center-content" id="main-scene">
-        
-        <!-- Intro -->
-        <div id="intro-screen" class="intro-screen">
-            <div class="mb-8 flex justify-center">
-                <div class="w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center border-4 border-gray-600 shadow-2xl relative">
-                    <i class="ph-duotone ph-soccer-ball text-5xl text-white opacity-90"></i>
-                    <div class="absolute -bottom-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">SCOUT</div>
+    <!-- 1. Intro -->
+    <div id="screen-intro" class="scene center-scene fade-in">
+        <div class="text-center">
+            <div class="relative mb-6">
+                <i class="ph-duotone ph-steering-wheel text-8xl text-white drop-shadow-lg"></i>
+            </div>
+            <h1 class="intro-logo">SUPER<br>SALES KART</h1>
+            <div class="logo-sub">MARKET VALUE GRAND PRIX</div>
+        </div>
+        <button class="kart-btn" onclick="goToRacerSelect()">RACE START!</button>
+    </div>
+
+    <!-- 2. Racer Select -->
+    <div id="screen-racer" class="scene hidden fade-in">
+        <div class="glass-panel">
+            <div class="q-header">
+                <span class="q-tag">SELECT PLAYER</span>
+                <span class="text-xs text-gray-400 font-bold">1/18</span>
+            </div>
+            <p class="q-text">당신의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
+            <div id="racer-list" class="racer-grid"></div>
+        </div>
+    </div>
+
+    <!-- 3. Dynamic Questions -->
+    <div id="screen-q" class="scene hidden fade-in">
+        <div class="glass-panel">
+            <div class="q-header">
+                <span class="q-tag" id="q-category">DRIVING</span>
+                <span class="text-xs text-gray-400 font-bold" id="q-progress">2/18</span>
+            </div>
+            <p class="q-text" id="q-desc">...</p>
+            <div id="area-choice" class="flex flex-col"></div>
+            <div id="area-input" class="hidden"></div>
+        </div>
+        <div class="flex gap-3 w-full max-w-[400px] mt-2">
+            <button class="nav-btn btn-back w-1/3" onclick="prevStep()">BACK</button>
+            <button class="nav-btn btn-next w-2/3" onclick="handleNext()">NEXT ▶</button>
+        </div>
+    </div>
+
+    <!-- 4. Result -->
+    <div id="screen-result" class="scene hidden fade-in" style="padding-top:40px;">
+        <div class="glass-panel text-center">
+            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4">
+                <span id="res-icon">🏆</span>
+            </div>
+            <h2 class="text-2xl font-black text-gray-800 mb-1">FINISH!</h2>
+            <p class="text-xs text-gray-500 font-bold mb-6 uppercase">Course Clear • New Record</p>
+
+            <div class="flex justify-center items-center gap-4 bg-gray-50 p-3 rounded-2xl border border-gray-100 mb-6">
+                <div class="text-left">
+                    <p class="text-[10px] text-gray-400 font-bold">RACER</p>
+                    <p class="text-base font-black text-gray-800" id="res-name">홍길동</p>
+                </div>
+                <div class="h-8 w-px bg-gray-300"></div>
+                <div class="text-left">
+                    <p class="text-[10px] text-gray-400 font-bold">TYPE</p>
+                    <p class="text-base font-black text-blue-500" id="res-role">마리오</p>
                 </div>
             </div>
-            <h1 class="intro-logo">SCOUTING<br>REPORT 2026</h1>
-            <p class="intro-sub">FA MARKET VALUE ANALYSIS</p>
+
+            <div class="bg-gradient-to-br from-red-50 to-orange-50 p-4 rounded-2xl border-2 border-white shadow-inner text-center mb-6">
+                <p class="text-[10px] font-bold text-red-500 tracking-widest mb-1">TOTAL BOUNTY</p>
+                <div class="text-3xl font-black text-gray-800">
+                    <span id="finalPrice">0</span> <span class="text-lg text-gray-500">만원</span>
+                </div>
+                <div class="mt-2 text-[10px] font-bold text-gray-500">
+                    연봉 대비 <span class="text-red-500" id="finalPct">0</span>% UP 🚀
+                </div>
+            </div>
+
+            <div class="chart-box"><canvas id="radarChart"></canvas></div>
             
-            <div class="bg-gray-800/80 p-4 rounded-lg mb-8 text-xs text-gray-400 max-w-xs mx-auto border border-gray-700 leading-relaxed">
-                실제 이적 시장 데이터를 기반으로<br>
-                귀하의 <strong>잠재적 이적료</strong>를 정밀 산출합니다.
-            </div>
-
-            <button class="start-btn" onclick="goToStep(0)">
-                분석 시작하기
-            </button>
-        </div>
-
-        <!-- 1. Position Select -->
-        <div id="step-position" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header">
-                    <span>Select Position</span> <span class="text-xs text-gray-500">1/15</span>
-                </div>
-                <div class="fm-box-content p-2">
-                    <div id="pos-list"></div>
-                </div>
+            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left">
+                <strong class="text-yellow-400 block mb-1">📢 PIT CREW'S ADVICE:</strong>
+                <span id="aiAdvice">...</span>
             </div>
         </div>
-
-        <!-- 2. Rank -->
-        <div id="step-rank" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Current Status (직급)</span> <span>2/15</span></div>
-                <div class="fm-box-content">
-                    <div id="rank-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-        
-        <!-- 3. Team Size -->
-        <div id="step-team" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Staff Management (조직)</span> <span>3/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label">본인 산하 조직원 수 (명)</label>
-                    <input type="number" id="team_size" class="fm-input" placeholder="0" onfocus="hideMsg()" onblur="showMsg()">
-                    <p class="text-xs text-gray-500 mt-2" id="team-hint">
-                        * 팀원: 0명 / 팀장: 1~5명 / 지점장: 6~20명 / 본부장: 21명+
-                    </p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('team')">확인</button>
-            </div>
-        </div>
-
-        <!-- 4. License [NEW] -->
-        <div id="step-license" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Skill Attributes (자격)</span> <span>4/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">보유 자격증 범위</label>
-                    <div id="license-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 5. Career -->
-        <div id="step-career" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Experience (경력)</span> <span>5/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label">총 영업 경력 (년)</label>
-                    <input type="number" id="career" class="fm-input" placeholder="예: 3" onfocus="hideMsg()" onblur="showMsg()">
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('career')">확인</button>
-            </div>
-        </div>
-
-        <!-- 6. Income -->
-        <div id="step-income" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Previous Wage (연봉)</span> <span>6/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label">직전연도 원천징수 금액 (만원)</label>
-                    <input type="number" id="income" class="fm-input" placeholder="예: 6000" onfocus="hideMsg()" onblur="showMsg()">
-                    <p class="text-xs text-gray-500 mt-2">* 세전 기준, 보너스 포함</p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('income')">확인</button>
-            </div>
-        </div>
-
-        <!-- 7. History -->
-        <div id="step-history" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Transfer History (이적)</span> <span>7/15</span></div>
-                <div class="fm-box-content">
-                    <p class="text-xs text-red-500 font-bold mb-3">⚠ 최근 3년 이내 이직 횟수</p>
-                    <div id="history-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 8. Sales Style -->
-        <div id="step-style" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Tactical Style (전술 성향)</span> <span>8/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">주력 영업 방식</label>
-                    <div id="style-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 9. Target Client [NEW] -->
-        <div id="step-client" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Target Market (고객)</span> <span>9/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">주력 고객 연령대/유형</label>
-                    <div id="client-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 10. Portfolio -->
-        <div id="step-portfolio" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Preferred Moves (상품)</span> <span>10/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">주력 판매 상품군</label>
-                    <div id="portfolio-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 11. W Score -->
-        <div id="step-w" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Consistency (꾸준함)</span> <span>11/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">주간 연속 청약(W) 달성 기록</label>
-                    <div id="w-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 12. Performance -->
-        <div id="step-perf" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Season Stats (실적)</span> <span>12/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label">월 평균 건수</label>
-                    <input type="number" id="count" class="fm-input mb-4" placeholder="예: 4.5" onfocus="hideMsg()" onblur="showMsg()">
-                    
-                    <label class="fm-label">월 평균 환산/초회 보험료 (만원)</label>
-                    <input type="number" id="premium" class="fm-input" placeholder="예: 50" onfocus="hideMsg()" onblur="showMsg()">
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('perf')">확인</button>
-            </div>
-        </div>
-
-        <!-- 13. MDRT & Quality -->
-        <div id="step-qual" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Quality & Honor</span> <span>13/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">MDRT 달성 경험 (최근 2년)</label>
-                    <div id="mdrt-options" class="mb-4"></div>
-                    
-                    <label class="fm-label mt-4">13회차 유지율 (%)</label>
-                    <input type="number" id="p13" class="fm-input mb-4" placeholder="예: 95" onfocus="hideMsg()" onblur="showMsg()">
-                    
-                    <label class="fm-label">25회차 유지율 (%)</label>
-                    <input type="number" id="p25" class="fm-input" placeholder="예: 85" onfocus="hideMsg()" onblur="showMsg()">
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" onclick="submitInput('qual')">확인</button>
-            </div>
-        </div>
-
-        <!-- 14. Priority [NEW] -->
-        <div id="step-needs" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Contract Priority (우선순위)</span> <span>14/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label mb-2">이직 시 최우선 고려 사항</label>
-                    <div id="needs-options"></div>
-                </div>
-            </div>
-            <button class="fm-btn-back w-full" onclick="prevStep()">이전 단계</button>
-        </div>
-
-        <!-- 15. Info & Contact -->
-        <div id="step-info" class="menu-wrapper">
-            <div class="fm-box">
-                <div class="fm-box-header"><span>Player Registration</span> <span>15/15</span></div>
-                <div class="fm-box-content">
-                    <label class="fm-label">이름 (실명)</label>
-                    <input type="text" id="userName" class="fm-input mb-3" placeholder="홍길동" onfocus="hideMsg()" onblur="showMsg()">
-                    
-                    <div class="gender-grid mb-3">
-                        <div class="gender-opt" onclick="selectGender('M', this)">남성</div>
-                        <div class="gender-opt" onclick="selectGender('F', this)">여성</div>
-                    </div>
-                    <input type="hidden" id="gender">
-
-                    <label class="fm-label">출생연도</label>
-                    <input type="number" id="birthYear" class="fm-input mb-3" placeholder="1990" onfocus="hideMsg()" onblur="showMsg()">
-                    
-                    <label class="fm-label">활동 지역</label>
-                    <input type="text" id="region" class="fm-input mb-3" placeholder="서울 강남" onfocus="hideMsg()" onblur="showMsg()">
-
-                    <label class="fm-label">연락처</label>
-                    <div class="flex gap-2">
-                        <input type="text" value="010" readonly class="fm-input w-1/4 text-gray-500 bg-gray-800 text-center">
-                        <input type="tel" id="p_mid" class="fm-input w-1/3 text-center" maxlength="4" placeholder="1234" onfocus="hideMsg()" onblur="showMsg()">
-                        <input type="tel" id="p_end" class="fm-input w-1/3 text-center" maxlength="4" placeholder="5678" onfocus="hideMsg()" onblur="showMsg()">
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="fm-btn-back flex-1" onclick="prevStep()">이전</button>
-                <button class="fm-btn-confirm flex-1" style="background:#10b981;" onclick="submitInput('info_contact')">리포트 생성</button>
-            </div>
-        </div>
-
-        <!-- Result -->
-        <div id="step-result" class="menu-wrapper" style="max-width: 95%;">
-            <div class="fm-box">
-                <div class="fm-box-header">
-                    <span>SCOUTING REPORT</span>
-                    <span class="text-xs font-normal text-gray-400" id="res-date">2026.01.05</span>
-                </div>
-                <div class="fm-box-content">
-                    
-                    <div class="result-header">
-                        <img id="res-img" src="" class="res-photo object-cover rounded">
-                        <div class="res-info">
-                            <h2 id="res-name">NAME</h2>
-                            <p id="res-role">POSITION</p>
-                            <span class="text-xs text-gray-400" id="res-rank-txt">RANK</span>
-                        </div>
-                    </div>
-
-                    <div class="val-box">
-                        <p class="val-label">ESTIMATED TRANSFER FEE (이적료)</p>
-                        <div class="val-amount">
-                            <span id="finalPrice">0</span> <span class="text-lg font-normal text-gray-400">만원</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1 val-sub">연봉 대비 <span id="finalPct" class="text-green-500 font-bold">0</span>% 가치</p>
-                    </div>
-
-                    <table class="stat-table mb-4">
-                        <tr>
-                            <td class="stat-label">Potential (잠재력)</td>
-                            <td class="stat-val text-yellow-400">⭐⭐⭐⭐⭐</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-label">Productivity (생산성)</td>
-                            <td class="stat-val" id="res-prod">A</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-label">Consistency (유지율)</td>
-                            <td class="stat-val" id="res-qual">A</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-label">Style (스타일)</td>
-                            <td class="stat-val text-blue-400" id="res-style">---</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-label">Specialty (특기)</td>
-                            <td class="stat-val" id="res-specialty">---</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-label">Honor (MDRT)</td>
-                            <td class="stat-val" id="res-honor">None</td>
-                        </tr>
-                    </table>
-
-                    <div class="bg-gray-800 p-3 rounded text-xs leading-relaxed text-gray-300 border-l-2 border-purple-500">
-                        <strong class="block text-purple-400 mb-1">SCOUT OPINION</strong>
-                        <span id="aiAdvice">...</span>
-                    </div>
-
-                </div>
-            </div>
-            
-            <div class="flex gap-2">
-                <button class="fm-btn text-center text-sm" onclick="location.reload()">새로고침</button>
-                <button class="fm-btn text-center text-sm bg-blue-600 border-blue-500" onclick="alert('복사되었습니다.')">리포트 공유</button>
-            </div>
-        </div>
-
+        <button class="kart-btn w-full text-lg mt-4" onclick="shareLink()">결과 공유하기</button>
     </div>
-
-    <!-- Manager Message Box (Compact) -->
-    <div class="message-box" id="msg-box" style="display:none;">
-        <div class="msg-avatar">
-            <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Manager&clothing=blazerAndShirt&accessories=glasses" class="w-full h-full">
-        </div>
-        <div class="msg-content">
-            <div class="msg-name">Chief Scout</div>
-            <div class="msg-text" id="npc-text"></div>
-        </div>
-    </div>
-
 </div>
 
 <script>
     // --- Data ---
-    const positions = [
-        { id: 'mf', name: '미드필더 (MF)', desc: '꾸준한 세일즈맨 - 기초가 탄탄한 영업자', icon: 'M', color: 'pos-mf' },
-        { id: 'fw', name: '스트라이커 (FW)', desc: '클로징 마스터 - 골 결정력이 좋음', icon: 'S', color: 'pos-fw' },
-        { id: 'df', name: '수비수 (DF)', desc: 'TA 고수 - 연결을 잘해줌', icon: 'D', color: 'pos-df' },
-        { id: 'mgr', name: '감독 (Manager)', desc: '훌륭한 조직 매니저', icon: 'M', color: 'pos-mgr' },
-        { id: 'coach', name: '코칭스태프 (Coach)', desc: '리더의 훌륭한 조력자', icon: 'C', color: 'pos-mgr' }
+    const racerList = [
+        { id: 'mario', name: '마리오 (리더형)', desc: '팀을 이끄는 탁월한 조직 관리자', icon: '🧢' },
+        { id: 'luigi', name: '루이지 (밸런스)', desc: '기본기가 탄탄한 팔방미인 영업자', icon: '🟢' },
+        { id: 'bowser', name: '쿠퍼 (파워형)', desc: '거절을 모르는 클로징 마스터', icon: '🔥' },
+        { id: 'yoshi', name: '요시 (스피드)', desc: '전화 연결의 신, TA 고수', icon: '🥚' },
+        { id: 'toad', name: '키노피오 (서포트)', desc: '조직의 핵심 조력자', icon: '🍄' }
     ];
 
-    const ranks = [
-        { l: '팀원 (FA/FC)', v: 'member' },
-        { l: '팀장 (SM/FM)', v: 'team_leader' },
-        { l: '지점장 (BM)', v: 'branch_manager' },
-        { l: '본부장/임원', v: 'director' }
-    ];
-
-    const historyOpts = [
-        { l: '이직 없음 (Stable)', v: 0 },
-        { l: '1회 (Normal)', v: 1 },
-        { l: '2회 (Frequent)', v: 2 },
-        { l: '3회 이상 (High Risk)', v: 3 }
-    ];
-
-    const wOpts = [
-        { l: '없음', v: 0 },
-        { l: '1W (10주 이상)', v: 0.03 },
-        { l: '1W (20주 이상)', v: 0.05 },
-        { l: '2W (50주 이상)', v: 0.10 },
-        { l: '3W (50주 이상)', v: 0.15 }
-    ];
-
-    const styleOpts = [
-        { l: '개척 영업 (Sourcing)', v: '개척' },
-        { l: '지인/소개 (Referral)', v: '지인' },
-        { l: 'DB 영업 (Inbound)', v: 'DB' }
-    ];
-
-    const portOpts = [
-        { l: '보장성 (Protection)', v: '보장' },
-        { l: '저축성 (Savings)', v: '저축' },
-        { l: '자동차/화재 (General)', v: '손해' }
-    ];
-
-    const mdrtOpts = [
-        { l: '해당 없음', v: 0 },
-        { l: 'MDRT', v: 0.1 },
-        { l: 'COT', v: 0.15 },
-        { l: 'TOT', v: 0.2 }
-    ];
-    
-    // New Options
-    const licenseOpts = [
-        { l: '생/손보 공통 자격', v: 0 },
-        { l: '+ 변액 보험 자격', v: 0.05 },
-        { l: '+ 투자권유 대행인', v: 0.1 }
-    ];
-    
-    const clientOpts = [
-        { l: '직장인/2030', v: 'salary' },
-        { l: '주부/4050', v: 'homemaker' },
-        { l: '자영업자/소상공인', v: 'biz' },
-        { l: '법인/CEO/전문직', v: 'vip' }
-    ];
-    
-    const needsOpts = [
-        { l: 'DB 제공 및 질', v: 'db' },
-        { l: '수수료 (보너스)', v: 'pay' },
-        { l: '교육 시스템', v: 'edu' },
-        { l: '관리자 비전', v: 'vision' }
+    const questions = [
+        { id: 'rank', title: '현재 직급', text: '현재 조직에서의 위치는?', type: 'choice', opts: [{l:'팀원 (FA/FC)',v:1}, {l:'팀장 (SM/FM)',v:2}, {l:'지점장 (BM)',v:3}, {l:'본부장/임원',v:4}] },
+        { id: 'team', title: '조직 규모', text: '현재 산하 팀원은 몇 명인가요?', type: 'input', inputs: [{id:'team_size', p:'0', label:'인원 (명)', type:'number'}] },
+        { id: 'recruit', title: '리크루팅', text: '1년에 몇 명 정도를 직접 채용하나요?', type: 'input', inputs: [{id:'recruit_avg', p:'0', label:'연간 도입 (명)', type:'number'}] },
+        { id: 'license', title: '보유 자격', text: '보유한 전문 자격을 선택하세요.', type: 'choice', opts: [{l:'생보 또는 손보 자격', v:0}, {l:'+ 변액 보험 자격', v:1}, {l:'+ 금융 전문 자격', v:2}] },
+        { id: 'career', title: '보험 경력', text: '총 영업 경력은 어느 정도인가요?', type: 'choice', opts: [{l:'1년 미만',v:1}, {l:'1~3년',v:2}, {l:'3~5년',v:3}, {l:'5~10년',v:4}, {l:'10년 이상',v:5}] },
+        { id: 'income', title: '원천 소득', text: '작년 원천징수 소득은 얼마인가요?', type: 'input', inputs: [{id:'income', p:'5000', label:'금액 (만원)', type:'number'}] },
+        { id: 'history', title: '이직 횟수', text: '최근 3년 내 보험사 이직 횟수는?', type: 'choice', opts: [{l:'없음',v:10}, {l:'1회',v:8}, {l:'2회',v:5}, {l:'3회 이상',v:2}] },
+        { id: 'style', title: '영업 방식', text: '주로 어떤 방식으로 영업하나요?', type: 'choice', opts: [{l:'개척 영업',v:1}, {l:'지인/소개 영업',v:2}, {l:'DB 영업',v:3}, {l:'이관고객 영업',v:4}, {l:'기타 (SNS 등)',v:5}] },
+        { id: 'client', title: '주력 고객', text: '주력으로 만나는 고객층은?', type: 'choice', opts: [{l:'직장인 (2030)',v:1}, {l:'주부 (4050)',v:2}, {l:'시니어 (60대+)',v:3}, {l:'자영업자',v:4}, {l:'법인/전문직',v:5}] },
+        { id: 'port', title: '주력 상품', text: '가장 자신있는 상품군은?', type: 'choice', opts: [{l:'보장성',v:10}, {l:'저축성',v:5}, {l:'자동차/화재',v:3}, {l:'복합',v:7}] },
+        { id: 'w', title: '활동 기록', text: '연속 청약(W) 기록이 있나요?', type: 'choice', opts: [{l:'없음',v:0}, {l:'1W 20주+',v:4}, {l:'2W 20주+',v:6}, {l:'3W 50주+',v:10}] },
+        { id: 'perf', title: '평균 실적', text: '월 평균 실적 데이터를 입력하세요.', type: 'input', inputs: [{id:'count', p:'4.5', label:'월 건수', type:'number'}, {id:'premium', p:'50', label:'월 평균 납입보험료(만)', type:'number'}] },
+        { id: 'mdrt', title: 'MDRT', text: 'MDRT 경험이 있나요?', type: 'choice', opts: [{l:'없음',v:0}, {l:'MDRT',v:6}, {l:'COT',v:8}, {l:'TOT',v:10}] },
+        { id: 'mdrt_cnt', title: 'MDRT 횟수', text: '몇 번이나 달성했나요?', type: 'choice', opts: [{l:'1회',v:3},{l:'2회',v:4},{l:'3~4회',v:4.5},{l:'5회 이상',v:5}], condition: (data) => data.mdrt > 0 },
+        { id: 'qual', title: '유지율', text: '계약 유지율을 입력해주세요.', type: 'input', inputs: [{id:'p13', p:'95', label:'13회차 (%)', type:'number'}, {id:'p25', p:'85', label:'25회차 (%)', type:'number'}] },
+        { id: 'needs', title: '현재 불만', text: '현재 조직에 불만이 있다면 어떤 점인가요?', type: 'choice', opts: [{l:'DB 지원 부족',v:1}, {l:'수수료/보상 체계',v:2}, {l:'교육 시스템 부재',v:3}, {l:'조직 문화/비전',v:4}, {l:'불만 없음',v:5}] },
+        { id: 'info', title: '기본 정보', text: '리포트 발급을 위한 정보 입력', type: 'input', inputs: [{id:'userName', p:'홍길동', label:'이름'}, {id:'region', p:'서울', label:'지역'}] },
+        { id: 'gender', title: '성별', text: '성별을 선택해주세요.', type: 'gender' },
+        { id: 'contact', title: '연락처', text: '결과 수신을 위한 연락처 입력', type: 'phone' }
     ];
 
     let userData = {};
-    let currentStep = -1; 
+    let currentStepIdx = -1;
+    let activeSteps = [];
+    let radarChart = null;
 
-    // --- Init ---
-    window.onload = function() {
-        const today = new Date();
-        document.getElementById('currentDate').innerText = `${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
-    };
-
-    // --- Core Functions ---
-    function typeText(text) {
-        const el = document.getElementById('npc-text');
-        el.innerHTML = '';
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                el.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, 15);
-            } else {
-                el.innerHTML += '<span class="blink-cursor"></span>';
-            }
-        }
-        type();
+    // --- Navigation ---
+    function showScreen(id) {
+        document.querySelectorAll('.scene').forEach(el => el.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 
-    function showStepScreen(stepId) {
-        document.querySelectorAll('.menu-wrapper').forEach(el => el.classList.remove('active'));
-        document.getElementById('intro-screen').style.display = 'none';
-        const scene = document.getElementById('main-scene');
-        scene.classList.remove('center-content');
-        
-        if(stepId) {
-            document.getElementById(stepId).classList.add('active');
-            
-            // Show Msg Box by default
-            document.getElementById('msg-box').style.display = 'flex';
-            
-            let msg = "";
-            switch(stepId) {
-                case 'step-position': msg = "자신의 성향과 가장 잘 맞는 포지션을 선택하세요."; scene.classList.add('center-content'); break;
-                case 'step-rank': msg = "현재 소속된 팀에서의 직급은 무엇입니까?"; break;
-                case 'step-team': msg = "본인이 직접 관리하는 산하 조직원 수를 정확히 입력하세요."; break;
-                case 'step-license': msg = "보유하고 계신 보험 자격증의 범위를 선택해주세요."; break;
-                case 'step-career': msg = "총 영업 경력(개월/년)을 입력해주세요."; break;
-                case 'step-income': msg = "중요합니다. 작년 원천징수 영수증 기준 연봉은 얼마인가요?"; break;
-                case 'step-history': msg = "최근 3년 이내 이직 횟수를 솔직하게 선택해주세요."; break;
-                case 'step-style': msg = "주로 어떤 방식으로 영업을 전개하시나요? (전술 성향)"; break;
-                case 'step-client': msg = "주력으로 만나는 고객층(타겟)은 누구입니까?"; break;
-                case 'step-portfolio': msg = "가장 자신 있는 주력 상품군은 무엇입니까? (선호 플레이)"; break;
-                case 'step-w': msg = "주간 연속 청약(W) 달성 경험이 있다면 선택해주세요."; break;
-                case 'step-perf': msg = "월 평균 실적(건수, 보험료)을 입력하세요."; break;
-                case 'step-mdrt': msg = "명예의 전당(MDRT) 달성 이력이 있나요?"; break;
-                case 'step-qual': msg = "계약 건전성 지표(유지율)를 확인합니다."; break;
-                case 'step-needs': msg = "이직 시 가장 중요하게 생각하는 조건은 무엇입니까?"; break;
-                case 'step-info': msg = "리포트 발급을 위한 본인 정보를 입력해주세요."; break;
-                case 'step-result': 
-                    document.getElementById('msg-box').style.display = 'none'; 
-                    scene.classList.add('center-content');
-                    break;
-            }
-            if(msg) typeText(msg);
-        }
-    }
-
-    // Hide/Show Msg Box on Input Focus
-    function hideMsg() { document.getElementById('msg-box').style.display = 'none'; }
-    function showMsg() { document.getElementById('msg-box').style.display = 'flex'; }
-
-    // --- Logic ---
-    function goToStep(stepIdx) {
-        currentStep = stepIdx;
-        const stepIds = [
-            'step-position', 'step-rank', 'step-team', 'step-license', 'step-career', 'step-income', 
-            'step-history', 'step-style', 'step-client', 'step-portfolio', 'step-w', 'step-perf', 
-            'step-mdrt', 'step-qual', 'step-needs', 'step-info', 'step-result'
-        ];
-        
-        // Dynamic Render
-        if (stepIdx === 0) { // Position
-            const list = document.getElementById('pos-list');
-            list.innerHTML = '';
-            positions.forEach(p => {
-                const el = document.createElement('div');
-                el.className = 'pos-card';
-                el.innerHTML = `
-                    <div class="pos-icon ${p.color}">${p.icon}</div>
-                    <div class="pos-info">
-                        <h4>${p.name}</h4>
-                        <p>${p.desc}</p>
-                    </div>
-                `;
-                el.onclick = () => { userData['position'] = p; nextStep(); };
-                list.appendChild(el);
-            });
-        }
-        else if (stepIdx === 1) renderButtons('rank-options', ranks, 'rank');
-        else if (stepIdx === 3) renderButtons('license-options', licenseOpts, 'license');
-        else if (stepIdx === 6) renderButtons('history-options', historyOpts, 'job_hop');
-        else if (stepIdx === 7) renderButtons('style-options', styleOpts, 'sales_style');
-        else if (stepIdx === 8) renderButtons('client-options', clientOpts, 'client');
-        else if (stepIdx === 9) renderButtons('portfolio-options', portOpts, 'portfolio');
-        else if (stepIdx === 10) renderButtons('w-options', wOpts, 'w_score');
-        else if (stepIdx === 12) renderButtons('mdrt-options', mdrtOpts, 'mdrt');
-        else if (stepIdx === 14) renderButtons('needs-options', needsOpts, 'needs');
-
-        showStepScreen(stepIds[stepIdx]);
-    }
-
-    function renderButtons(containerId, options, key) {
-        const list = document.getElementById(containerId);
+    function goToRacerSelect() {
+        showScreen('screen-racer');
+        const list = document.getElementById('racer-list');
         list.innerHTML = '';
-        options.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'fm-btn';
-            btn.innerText = o.l;
-            btn.onclick = () => { userData[key] = o.v; nextStep(); };
-            list.appendChild(btn);
+        racerList.forEach(r => {
+            const el = document.createElement('div');
+            el.className = 'racer-card';
+            el.innerHTML = `
+                <div class="racer-img-box">${r.icon}</div>
+                <div class="racer-info"><h4>${r.name}</h4><p>${r.desc}</p></div>
+            `;
+            el.onclick = () => { userData['racer'] = r; startRace(); };
+            list.appendChild(el);
         });
     }
 
-    function selectGender(val, el) {
-        document.querySelectorAll('.gender-opt').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        userData['gender'] = val;
+    function startRace() {
+        activeSteps = [...questions];
+        currentStepIdx = 0;
+        showScreen('screen-q');
+        renderQuestion();
     }
 
-    function nextStep() {
-        goToStep(currentStep + 1);
+    function renderQuestion() {
+        while (currentStepIdx < activeSteps.length) {
+            const q = activeSteps[currentStepIdx];
+            if (q.condition && !q.condition(userData)) { currentStepIdx++; } else { break; }
+        }
+        if (currentStepIdx >= activeSteps.length) { finishRace(); return; }
+
+        const q = activeSteps[currentStepIdx];
+        document.getElementById('stepIndicator').innerText = `LAP ${currentStepIdx + 1}`;
+        document.getElementById('q-progress').innerText = `${currentStepIdx + 1} / ${activeSteps.length}`;
+        document.getElementById('q-desc').innerText = q.text;
+
+        const cArea = document.getElementById('area-choice');
+        const iArea = document.getElementById('area-input');
+        cArea.innerHTML = ''; iArea.innerHTML = '';
+        cArea.classList.add('hidden'); iArea.classList.add('hidden');
+
+        if (q.type === 'choice') {
+            cArea.classList.remove('hidden');
+            q.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if(userData[q.id] === opt.v) btn.classList.add('selected');
+                btn.innerText = opt.l;
+                btn.onclick = () => {
+                    userData[q.id] = opt.v;
+                    renderQuestion(); // Re-render to update selected state
+                };
+                cArea.appendChild(btn);
+            });
+        } else if (q.type === 'gender') {
+            cArea.classList.remove('hidden');
+            const row = document.createElement('div'); 
+            row.className = "flex gap-3 w-full";
+            ['남성', '여성'].forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn text-center flex-1';
+                if(userData['gender'] === g) btn.classList.add('selected');
+                btn.innerText = g;
+                btn.onclick = () => { 
+                    userData['gender'] = g;
+                    // 즉각적인 시각 피드백을 위해 전체 버튼 클래스 업데이트
+                    row.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                row.appendChild(btn);
+            });
+            cArea.appendChild(row);
+        } else if (q.type === 'phone') {
+            iArea.classList.remove('hidden');
+            iArea.innerHTML = `
+                <div class="flex gap-2 items-center mb-4">
+                    <input type="text" value="010" readonly class="kart-input w-1/4 bg-gray-100 text-gray-400">
+                    <input type="tel" id="p_mid" class="kart-input w-1/3" maxlength="4" placeholder="1234">
+                    <input type="tel" id="p_end" class="kart-input w-1/3" maxlength="4" placeholder="5678">
+                </div>
+                <div class="bg-gray-50 p-3 rounded-xl text-[10px] text-gray-500 border border-gray-200">
+                    <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="checkbox" id="agree1" class="w-4 h-4"> [필수] 개인정보 수집·이용 동의</label>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold mt-2"><input type="checkbox" id="agree2" class="w-4 h-4"> [필수] 제3자 정보 제공 동의</label>
+                </div>
+            `;
+        } else {
+            iArea.classList.remove('hidden');
+            q.inputs.forEach(inp => {
+                const label = document.createElement('label'); label.className = 'input-label'; label.innerText = inp.label;
+                iArea.appendChild(label);
+                const input = document.createElement('input'); 
+                input.id = inp.id; input.type = inp.type || 'text';
+                input.className = 'kart-input mb-4'; input.placeholder = inp.p;
+                if(userData[inp.id]) input.value = userData[inp.id];
+                iArea.appendChild(input);
+            });
+        }
     }
 
-    function prevStep() {
-        if(currentStep > 0) goToStep(currentStep - 1);
-        else location.reload();
+    function handleNext() {
+        const q = activeSteps[currentStepIdx];
+        if (q.type === 'choice' || q.type === 'gender') {
+            const key = q.type === 'gender' ? 'gender' : q.id;
+            if(userData[key] === undefined) { alert('항목을 선택해주세요!'); return; }
+        } else if (q.type === 'phone') {
+            const m = document.getElementById('p_mid').value, e = document.getElementById('p_end').value;
+            const a1 = document.getElementById('agree1').checked, a2 = document.getElementById('agree2').checked;
+            if(m.length < 4 || e.length < 4) { alert("연락처를 확인해주세요."); return; }
+            if(!a1 || !a2) { alert("약관에 동의해주세요."); return; }
+            userData['phone'] = `010-${m}-${e}`;
+        } else {
+            let valid = true;
+            q.inputs.forEach(inp => {
+                const el = document.getElementById(inp.id);
+                if(!el.value) { el.style.borderColor="red"; valid=false; }
+                else userData[inp.id] = el.value;
+            });
+            if(!valid) return;
+        }
+        currentStepIdx++; renderQuestion();
     }
 
-    function submitInput(type) {
-        let valid = true;
-        if(type === 'team') {
-            const v = document.getElementById('team_size').value;
-            if(v === '') valid=false; else userData['team_size'] = parseInt(v);
-        }
-        else if(type === 'career') {
-            const v = document.getElementById('career').value;
-            if(!v) valid=false; else userData['career'] = parseFloat(v);
-        }
-        else if(type === 'income') {
-            const v = document.getElementById('income').value;
-            if(!v) valid=false; else userData['income'] = parseInt(v);
-        }
-        else if(type === 'perf') {
-            const c = document.getElementById('count').value;
-            const p = document.getElementById('premium').value;
-            if(!c || !p) valid=false; 
-            else { userData['count']=parseFloat(c); userData['premium']=parseInt(p); }
-        }
-        else if(type === 'qual') {
-            const p13 = document.getElementById('p13').value;
-            const p25 = document.getElementById('p25').value;
-            if(!p13 || !p25) valid=false;
-            else { userData['p13']=parseInt(p13); userData['p25']=parseInt(p25); }
-        }
-        else if(type === 'info_contact') {
-            const n = document.getElementById('userName').value;
-            const b = document.getElementById('birthYear').value;
-            const r = document.getElementById('region').value;
-            const m = document.getElementById('p_mid').value;
-            const e = document.getElementById('p_end').value;
-            const g = userData['gender'];
-            
-            if(!n || !b || !r || !g || !m || !e || m.length<4 || e.length<4) valid=false;
-            else { 
-                userData['name']=n; userData['birth']=b; userData['region']=r; 
-                userData['phone'] = `010-${m}-${e}`;
-                finishGame();
-                return;
-            }
-        }
+    function prevStep() { if(currentStepIdx > 0) { currentStepIdx--; renderQuestion(); } else { goToRacerSelect(); } }
 
-        if(!valid) {
-            alert('정보를 정확히 입력해주세요.');
-            return;
-        }
-        nextStep();
-    }
-
-    function finishGame() {
-        const income = userData['income'] || 0;
+    function finishRace() {
+        const income = parseInt(userData['income']) || 5000;
         let mult = 1.0;
         
-        // Multiplier Logic
-        if(userData['job_hop'] === 0) mult += 0.1;
-        if(userData['job_hop'] >= 3) mult -= 0.2;
-        if(userData['p13'] >= 95) mult += 0.1;
-        if(userData['w_score']) mult += userData['w_score'];
-        if(userData['mdrt']) mult += userData['mdrt'];
-        if(userData['license']) mult += userData['license'];
+        const prem = parseInt(userData['premium']||0);
+        const p13 = parseInt(userData['p13']||0);
+        const p25 = parseInt(userData['p25']||0);
         
-        let final = Math.round(income * mult * 0.5); 
+        const s_prod = prem >= 100 ? 10 : (prem >= 70 ? 8 : (prem >= 50 ? 6 : 4));
+        const s_eff = (prem / (parseFloat(userData['count'])||1)) >= 15 ? 10 : 7;
+        
+        // 유지율 스코어 (13회와 25회 가중치 계산)
+        const s_qual = ((p13 >= 95 ? 10 : 7) + (p25 >= 85 ? 10 : 7)) / 2;
+        
+        const s_exp = (userData['mdrt'] > 0 ? 5 : 0) + (userData['license'] > 0 ? 3 : 2);
+        const s_lead = parseInt(userData['team_size']||0) >= 5 ? 10 : 6;
+
+        mult += (s_prod + s_qual + s_eff + s_exp + s_lead) * 0.015;
+        let final = Math.round(income * mult * 0.6); 
         let pct = Math.round((final/income)*100);
-        
-        showStepScreen('step-result');
-        
-        const genderSeed = userData['gender'] === 'M' ? 'Felix' : 'Aneka';
-        document.getElementById('res-img').src = `https://api.dicebear.com/9.x/avataaars/svg?seed=${genderSeed}&clothing=blazerAndShirt&accessories=glasses&backgroundColor=1f2937`;
-        document.getElementById('res-name').innerText = userData['name'];
-        document.getElementById('res-role').innerText = userData['position'].name.split('(')[0].trim();
-        
-        const rMap = {'member':'1군 선수 (팀원)', 'team_leader':'주장 (팀장)', 'branch_manager':'코치 (지점장)', 'director':'감독 (본부장)'};
-        document.getElementById('res-rank-txt').innerText = rMap[userData['rank']];
-        
-        document.getElementById('res-style').innerText = userData['sales_style'] || "Balanced";
-        document.getElementById('res-specialty').innerText = userData['portfolio'] || "General";
+
+        showScreen('screen-result');
+        document.getElementById('res-name').innerText = userData['userName'];
+        document.getElementById('res-role').innerText = userData['racer'].name;
+        document.getElementById('res-icon').innerText = userData['racer'].icon;
 
         let current = 0;
         const timer = setInterval(() => {
             current += Math.ceil(final / 30);
             if(current >= final) { current = final; clearInterval(timer); }
             document.getElementById('finalPrice').innerText = current.toLocaleString();
+            document.getElementById('scoreDisplay').innerText = current.toString().substring(0,3);
         }, 30);
         document.getElementById('finalPct').innerText = pct;
-        
-        document.getElementById('res-prod').innerText = userData['premium'] >= 50 ? "A" : "B";
-        document.getElementById('res-qual').innerText = userData['p13'] >= 90 ? "A+" : "B";
-        document.getElementById('res-honor').innerText = userData['mdrt'] > 0 ? "YES" : "NO";
-        
-        document.getElementById('aiAdvice').innerText = "이 선수는 탁월한 역량과 잠재력을 보유하고 있습니다. 제시된 조건(Needs)을 충족한다면 팀의 성과를 극대화할 것입니다. 영입 1순위 대상입니다.";
+        document.getElementById('aiAdvice').innerText = "당신은 서킷의 지배자! 현재 몸값보다 훨씬 더 높은 가치를 인정받을 자격이 충분합니다.";
+
+        renderRadarChart([s_prod, s_eff, s_qual, s_exp, s_lead]);
     }
 
-    function shareLink() { alert("리포트 주소가 복사되었습니다."); }
-</script>
+    function renderRadarChart(data) {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['생산성', '효율성', '유지율', '전문성', '리더십'],
+                datasets: [{
+                    data: data, backgroundColor: 'rgba(0, 157, 253, 0.2)', 
+                    borderColor: '#009dfd', pointBackgroundColor: '#fff', borderWidth: 2
+                }]
+            },
+            options: {
+                scales: { r: { min: 0, max: 10, ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.1)' }, pointLabels: { font: { size: 10, weight: 'bold' } } } },
+                plugins: { legend: { display: false } }, maintainAspectRatio: false
+            }
+        });
+    }
 
+    function shareLink() { alert("결과 링크가 클립보드에 복사되었습니다!"); }
+</script>
 </body>
 </html>
-
-
