@@ -11,7 +11,6 @@
 
     <style>
         :root {
-            /* Mario Kart Style Palette */
             --kart-blue: #009dfd;
             --kart-red: #ea0012;
             --kart-yellow: #fff300;
@@ -34,13 +33,12 @@
             overscroll-behavior: none;
         }
 
-        /* 3D App Frame */
         .kart-frame {
             width: 100%;
             max-width: 480px;
             height: 100dvh;
             max-height: 900px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%); /* 밝은 하늘색 배경 */
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -50,13 +48,12 @@
             border-radius: 24px;
         }
 
-        /* Racing Track (Road) Background */
         .road-bg {
             position: absolute;
             bottom: -20%; left: -50%; width: 200%; height: 60%;
-            background-color: #444; /* 아스팔트 색상 */
+            background-color: #444;
             background-image: 
-                linear-gradient(90deg, transparent 49%, #fff 50%, transparent 51%), /* 중앙선 */
+                linear-gradient(90deg, transparent 49%, #fff 50%, transparent 51%),
                 repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.1) 21px, rgba(255,255,255,0.1) 40px);
             transform: perspective(500px) rotateX(60deg);
             animation: roadMove 1s linear infinite;
@@ -65,7 +62,6 @@
             opacity: 0.6;
         }
         
-        /* Road center line dashed effect */
         .road-bg::after {
             content: '';
             position: absolute;
@@ -79,7 +75,6 @@
             to { background-position: 0 80px; }
         }
 
-        /* HUD */
         .hud {
             display: flex;
             justify-content: space-between;
@@ -100,7 +95,6 @@
             box-shadow: 0 4px 0 #990000;
         }
 
-        /* Scene Area */
         .scene {
             flex: 1;
             position: relative;
@@ -117,7 +111,6 @@
         .scene::-webkit-scrollbar { display: none; }
         .center-scene { justify-content: center; }
 
-        /* Intro Screen */
         .intro-logo {
             font-family: 'Fredoka', sans-serif;
             font-size: 44px;
@@ -141,7 +134,6 @@
             margin-bottom: 50px;
         }
         
-        /* 3D Button */
         .kart-btn {
             background: linear-gradient(to bottom, #ff5e3a 0%, #ff2a00 100%);
             border: 2px solid rgba(255,255,255,0.5);
@@ -161,7 +153,6 @@
             box-shadow: 0 0 0 #cc2200, 0 5px 10px rgba(0,0,0,0.3);
         }
 
-        /* Glass Panel */
         .glass-panel {
             background: var(--glass-bg);
             border-radius: 24px;
@@ -176,7 +167,6 @@
         .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
         .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
 
-        /* Racer Cards */
         .racer-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
         .racer-card {
             background: white; border-radius: 16px; padding: 12px;
@@ -195,7 +185,6 @@
         .racer-info h4 { font-weight: 800; color: #333; font-size: 15px; }
         .racer-info p { font-size: 11px; color: #777; }
 
-        /* Pixel Buttons */
         .option-btn {
             display: block; width: 100%; text-align: left;
             background: white; border: 2px solid #eee;
@@ -216,7 +205,6 @@
         .btn-next { background: var(--kart-green); color: white; box-shadow: 0 4px 0 #16a34a; }
         .nav-btn:active { transform: translateY(4px); box-shadow: none; }
 
-        /* Inputs */
         .kart-input {
             width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px;
             font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #fff;
@@ -228,6 +216,13 @@
         .hidden { display: none !important; }
 
         .chart-box { position: relative; height: 250px; width: 100%; margin: 20px 0; }
+        
+        .entry-no-badge {
+            background: #000; color: #fff; font-family: 'Fredoka', sans-serif;
+            font-weight: 900; padding: 4px 10px; border-radius: 8px; border: 2px solid #fff;
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 20;
+        }
     </style>
 </head>
 <body>
@@ -264,9 +259,9 @@
         <div class="glass-panel">
             <div class="q-header">
                 <span class="q-tag">SELECT PLAYER</span>
-                <span class="text-xs text-gray-400 font-bold">1/18</span>
+                <span class="text-xs text-gray-400 font-bold">1 / 18</span>
             </div>
-            <p class="q-text">당신의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
+            <p class="q-text">1. 당신의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
             <div id="racer-list" class="racer-grid"></div>
         </div>
     </div>
@@ -276,7 +271,7 @@
         <div class="glass-panel">
             <div class="q-header">
                 <span class="q-tag" id="q-category">DRIVING</span>
-                <span class="text-xs text-gray-400 font-bold" id="q-progress">2/18</span>
+                <span class="text-xs text-gray-400 font-bold" id="q-progress">2 / 18</span>
             </div>
             <p class="q-text" id="q-desc">...</p>
             <div id="area-choice" class="flex flex-col"></div>
@@ -290,7 +285,12 @@
 
     <!-- 4. Result -->
     <div id="screen-result" class="scene hidden fade-in" style="padding-top:40px;">
-        <div class="glass-panel text-center">
+        <div class="glass-panel text-center relative">
+            <!-- Entry Number Badge -->
+            <div class="entry-no-badge" id="res-entry-box" style="display:none;">
+                PLAYER NO.<span id="res-entry-no">---</span>
+            </div>
+
             <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4">
                 <span id="res-icon">🏆</span>
             </div>
@@ -300,12 +300,12 @@
             <div class="flex justify-center items-center gap-4 bg-gray-50 p-3 rounded-2xl border border-gray-100 mb-6">
                 <div class="text-left">
                     <p class="text-[10px] text-gray-400 font-bold">RACER</p>
-                    <p class="text-base font-black text-gray-800" id="res-name">홍길동</p>
+                    <p class="text-base font-black text-gray-800" id="res-name">---</p>
                 </div>
                 <div class="h-8 w-px bg-gray-300"></div>
                 <div class="text-left">
                     <p class="text-[10px] text-gray-400 font-bold">TYPE</p>
-                    <p class="text-base font-black text-blue-500" id="res-role">마리오</p>
+                    <p class="text-base font-black text-blue-500" id="res-role">---</p>
                 </div>
             </div>
 
@@ -326,40 +326,41 @@
                 <span id="aiAdvice">...</span>
             </div>
         </div>
-        <button class="kart-btn w-full text-lg mt-4" onclick="shareLink()">결과 공유하기</button>
+        <button class="kart-btn w-full text-lg mt-4" id="btn-share" onclick="shareLink()">결과 공유하기</button>
     </div>
 </div>
 
 <script>
-    // --- Data ---
+    const BACKEND_URL = 'http://localhost:3000/api/submit'; 
+
     const racerList = [
-        { id: 'mario', name: '마리오 (리더형)', desc: '팀을 이끄는 탁월한 조직 관리자', icon: '🧢' },
-        { id: 'luigi', name: '루이지 (밸런스)', desc: '기본기가 탄탄한 팔방미인 영업자', icon: '🟢' },
-        { id: 'bowser', name: '쿠퍼 (파워형)', desc: '거절을 모르는 클로징 마스터', icon: '🔥' },
-        { id: 'yoshi', name: '요시 (스피드)', desc: '전화 연결의 신, TA 고수', icon: '🥚' },
-        { id: 'toad', name: '키노피오 (서포트)', desc: '조직의 핵심 조력자', icon: '🍄' }
+        { id: 'mario', name: '마리오 (리더형)', desc: '팀을 이끄는 탁월한 조직 관리자', icon: 'Cap' },
+        { id: 'luigi', name: '루이지 (밸런스)', desc: '기본기가 탄탄한 팔방미인 영업자', icon: 'Luigi' },
+        { id: 'bowser', name: '쿠퍼 (파워형)', desc: '클로징 마스터 (결정력)', icon: 'Bowser' },
+        { id: 'yoshi', name: '요시 (스피드)', desc: '전화 연결의 신, TA 고수', icon: 'Yoshi' },
+        { id: 'toad', name: '키노피오 (서포트)', desc: '조직의 핵심 조력자', icon: 'Toad' }
     ];
 
     const questions = [
-        { id: 'rank', title: '현재 직급', text: '현재 조직에서의 위치는?', type: 'choice', opts: [{l:'팀원 (FA/FC)',v:1}, {l:'팀장 (SM/FM)',v:2}, {l:'지점장 (BM)',v:3}, {l:'본부장/임원',v:4}] },
+        { id: 'rank', title: '현재 직급', text: '현재 조직에서의 위치는?', type: 'choice', opts: [{l:'팀원 (FA/FC)',v:'팀원'}, {l:'팀장 (SM/FM)',v:'팀장'}, {l:'지점장 (BM)',v:'지점장'}, {l:'본부장/임원',v:'본부장'}] },
         { id: 'team', title: '조직 규모', text: '현재 산하 팀원은 몇 명인가요?', type: 'input', inputs: [{id:'team_size', p:'0', label:'인원 (명)', type:'number'}] },
         { id: 'recruit', title: '리크루팅', text: '1년에 몇 명 정도를 직접 채용하나요?', type: 'input', inputs: [{id:'recruit_avg', p:'0', label:'연간 도입 (명)', type:'number'}] },
-        { id: 'license', title: '보유 자격', text: '보유한 전문 자격을 선택하세요.', type: 'choice', opts: [{l:'생보 또는 손보 자격', v:0}, {l:'+ 변액 보험 자격', v:1}, {l:'+ 금융 전문 자격', v:2}] },
-        { id: 'career', title: '보험 경력', text: '총 영업 경력은 어느 정도인가요?', type: 'choice', opts: [{l:'1년 미만',v:1}, {l:'1~3년',v:2}, {l:'3~5년',v:3}, {l:'5~10년',v:4}, {l:'10년 이상',v:5}] },
+        { id: 'license', title: '보유 자격', text: '보유한 면허(자격)를 선택하세요.', type: 'choice', opts: [{l:'기본 자격', v:'기본'}, {l:'+ 변액 면허', v:'변액'}, {l:'+ 금융 전문 자격', v:'금융자격'}] },
+        { id: 'career', title: '보험 경력', text: '총 영업 경력은 어느 정도인가요?', type: 'choice', opts: [{l:'1년 미만',v:'1년미만'}, {l:'1~3년',v:'1~3년'}, {l:'3~5년',v:'3~5년'}, {l:'5~10년',v:'5~10년'}, {l:'10년 이상',v:'10년이상'}] },
         { id: 'income', title: '원천 소득', text: '작년 원천징수 소득은 얼마인가요?', type: 'input', inputs: [{id:'income', p:'5000', label:'금액 (만원)', type:'number'}] },
-        { id: 'history', title: '이직 횟수', text: '최근 3년 내 보험사 이직 횟수는?', type: 'choice', opts: [{l:'없음',v:10}, {l:'1회',v:8}, {l:'2회',v:5}, {l:'3회 이상',v:2}] },
-        { id: 'style', title: '영업 방식', text: '주로 어떤 방식으로 영업하나요?', type: 'choice', opts: [{l:'개척 영업',v:1}, {l:'지인/소개 영업',v:2}, {l:'DB 영업',v:3}, {l:'이관고객 영업',v:4}, {l:'기타 (SNS 등)',v:5}] },
-        { id: 'client', title: '주력 고객', text: '주력으로 만나는 고객층은?', type: 'choice', opts: [{l:'직장인 (2030)',v:1}, {l:'주부 (4050)',v:2}, {l:'시니어 (60대+)',v:3}, {l:'자영업자',v:4}, {l:'법인/전문직',v:5}] },
-        { id: 'port', title: '주력 상품', text: '가장 자신있는 상품군은?', type: 'choice', opts: [{l:'보장성',v:10}, {l:'저축성',v:5}, {l:'자동차/화재',v:3}, {l:'복합',v:7}] },
-        { id: 'w', title: '활동 기록', text: '연속 청약(W) 기록이 있나요?', type: 'choice', opts: [{l:'없음',v:0}, {l:'1W 20주+',v:4}, {l:'2W 20주+',v:6}, {l:'3W 50주+',v:10}] },
+        { id: 'history', title: '이직 횟수', text: '최근 3년 내 보험사 이직 횟수는?', type: 'choice', opts: [{l:'없음',v:0}, {l:'1회',v:1}, {l:'2회',v:2}, {l:'3회 이상',v:3}] },
+        { id: 'style', title: '영업 방식', text: '주로 어떤 방식으로 영업하나요?', type: 'choice', opts: [{l:'개척 영업',v:'개척'}, {l:'지인/소개 영업',v:'지인'}, {l:'DB 영업',v:'DB'}, {l:'이관고객 영업',v:'이관'}, {l:'기타 (SNS 등)',v:'기타'}] },
+        { id: 'client', title: '주력 고객', text: '주력으로 만나는 고객층은?', type: 'choice', opts: [{l:'직장인 (2030)',v:'직장인'}, {l:'주부 (4050)',v:'주부'}, {l:'시니어 (60대+)',v:'시니어'}, {l:'자영업자',v:'자영업자'}, {l:'법인/전문직',v:'법인'}] },
+        { id: 'port', title: '주력 상품', text: '가장 자신있는 상품군은?', type: 'choice', opts: [{l:'보장성',v:'보장성'}, {l:'저축성',v:'저축성'}, {l:'자동차/화재',v:'자동차'}, {l:'복합',v:'복합'}] },
+        { id: 'w', title: '활동 기록', text: '연속 청약(W) 기록이 있나요?', type: 'choice', opts: [{l:'없음',v:'없음'}, {l:'1W 20주+',v:'1W'}, {l:'2W 20주+',v:'2W'}, {l:'3W 50주+',v:'3W'}] },
         { id: 'perf', title: '평균 실적', text: '월 평균 실적 데이터를 입력하세요.', type: 'input', inputs: [{id:'count', p:'4.5', label:'월 건수', type:'number'}, {id:'premium', p:'50', label:'월 평균 납입보험료(만)', type:'number'}] },
-        { id: 'mdrt', title: 'MDRT', text: 'MDRT 경험이 있나요?', type: 'choice', opts: [{l:'없음',v:0}, {l:'MDRT',v:6}, {l:'COT',v:8}, {l:'TOT',v:10}] },
-        { id: 'mdrt_cnt', title: 'MDRT 횟수', text: '몇 번이나 달성했나요?', type: 'choice', opts: [{l:'1회',v:3},{l:'2회',v:4},{l:'3~4회',v:4.5},{l:'5회 이상',v:5}], condition: (data) => data.mdrt > 0 },
+        { id: 'mdrt', title: 'MDRT', text: 'MDRT 경험이 있나요?', type: 'choice', opts: [{l:'없음',v:'없음'}, {l:'MDRT',v:'MDRT'}, {l:'COT',v:'COT'}, {l:'TOT',v:'TOT'}] },
+        { id: 'mdrt_cnt', title: 'MDRT 횟수', text: '몇 번이나 달성했나요?', type: 'choice', opts: [{l:'1회',v:1},{l:'2회',v:2},{l:'3~4회',v:3},{l:'5회 이상',v:5}], condition: (data) => data.mdrt !== '없음' },
         { id: 'qual', title: '유지율', text: '계약 유지율을 입력해주세요.', type: 'input', inputs: [{id:'p13', p:'95', label:'13회차 (%)', type:'number'}, {id:'p25', p:'85', label:'25회차 (%)', type:'number'}] },
-        { id: 'needs', title: '현재 불만', text: '현재 조직에 불만이 있다면 어떤 점인가요?', type: 'choice', opts: [{l:'DB 지원 부족',v:1}, {l:'수수료/보상 체계',v:2}, {l:'교육 시스템 부재',v:3}, {l:'조직 문화/비전',v:4}, {l:'불만 없음',v:5}] },
+        { id: 'needs', title: '현재 불만', text: '현재 조직에 불만이 있다면 어떤 점인가요?', type: 'choice', opts: [{l:'DB 지원 부족',v:'DB부족'}, {l:'수수료/보상 체계',v:'수수료'}, {l:'교육 시스템 부재',v:'교육부재'}, {l:'조직 문화/비전',v:'조직문화'}, {l:'불만 없음',v:'불만없음'}] },
         { id: 'info', title: '기본 정보', text: '리포트 발급을 위한 정보 입력', type: 'input', inputs: [{id:'userName', p:'홍길동', label:'이름'}, {id:'region', p:'서울', label:'지역'}] },
         { id: 'gender', title: '성별', text: '성별을 선택해주세요.', type: 'gender' },
-        { id: 'contact', title: '연락처', text: '결과 수신을 위한 연락처 입력', type: 'phone' }
+        { id: 'contact', title: '연락처', text: '결과 수신 및 저장을 위한 연락처', type: 'phone' }
     ];
 
     let userData = {};
@@ -367,7 +368,6 @@
     let activeSteps = [];
     let radarChart = null;
 
-    // --- Navigation ---
     function showScreen(id) {
         document.querySelectorAll('.scene').forEach(el => el.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
@@ -381,12 +381,17 @@
             const el = document.createElement('div');
             el.className = 'racer-card';
             el.innerHTML = `
-                <div class="racer-img-box">${r.icon}</div>
+                <div class="racer-img-box">${getEmoji(r.id)}</div>
                 <div class="racer-info"><h4>${r.name}</h4><p>${r.desc}</p></div>
             `;
             el.onclick = () => { userData['racer'] = r; startRace(); };
             list.appendChild(el);
         });
+    }
+
+    function getEmoji(id) {
+        const map = { mario:'🧢', luigi:'🟢', bowser:'🔥', yoshi:'🥚', toad:'🍄' };
+        return map[id];
     }
 
     function startRace() {
@@ -404,9 +409,11 @@
         if (currentStepIdx >= activeSteps.length) { finishRace(); return; }
 
         const q = activeSteps[currentStepIdx];
-        document.getElementById('stepIndicator').innerText = `LAP ${currentStepIdx + 1}`;
-        document.getElementById('q-progress').innerText = `${currentStepIdx + 1} / ${activeSteps.length}`;
-        document.getElementById('q-desc').innerText = q.text;
+        const displayNum = currentStepIdx + 2; 
+        
+        document.getElementById('stepIndicator').innerText = `LAP ${displayNum}`;
+        document.getElementById('q-progress').innerText = `${displayNum} / 18`;
+        document.getElementById('q-desc').innerText = `${displayNum}. ${q.text}`;
 
         const cArea = document.getElementById('area-choice');
         const iArea = document.getElementById('area-input');
@@ -420,10 +427,7 @@
                 btn.className = 'option-btn';
                 if(userData[q.id] === opt.v) btn.classList.add('selected');
                 btn.innerText = opt.l;
-                btn.onclick = () => {
-                    userData[q.id] = opt.v;
-                    renderQuestion(); // Re-render to update selected state
-                };
+                btn.onclick = () => { userData[q.id] = opt.v; renderQuestion(); };
                 cArea.appendChild(btn);
             });
         } else if (q.type === 'gender') {
@@ -437,7 +441,6 @@
                 btn.innerText = g;
                 btn.onclick = () => { 
                     userData['gender'] = g;
-                    // 즉각적인 시각 피드백을 위해 전체 버튼 클래스 업데이트
                     row.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
                 };
@@ -453,8 +456,8 @@
                     <input type="tel" id="p_end" class="kart-input w-1/3" maxlength="4" placeholder="5678">
                 </div>
                 <div class="bg-gray-50 p-3 rounded-xl text-[10px] text-gray-500 border border-gray-200">
-                    <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="checkbox" id="agree1" class="w-4 h-4"> [필수] 개인정보 수집·이용 동의</label>
-                    <label class="flex items-center gap-2 cursor-pointer font-bold mt-2"><input type="checkbox" id="agree2" class="w-4 h-4"> [필수] 제3자 정보 제공 동의</label>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold"><input type="checkbox" id="agree1" class="w-4 h-4" checked> [필수] 개인정보 수집·이용 동의</label>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold mt-2"><input type="checkbox" id="agree2" class="w-4 h-4" checked> [필수] 제3자 정보 제공 동의</label>
                 </div>
             `;
         } else {
@@ -462,8 +465,7 @@
             q.inputs.forEach(inp => {
                 const label = document.createElement('label'); label.className = 'input-label'; label.innerText = inp.label;
                 iArea.appendChild(label);
-                const input = document.createElement('input'); 
-                input.id = inp.id; input.type = inp.type || 'text';
+                const input = document.createElement('input'); input.id = inp.id; input.type = inp.type || 'text';
                 input.className = 'kart-input mb-4'; input.placeholder = inp.p;
                 if(userData[inp.id]) input.value = userData[inp.id];
                 iArea.appendChild(input);
@@ -496,48 +498,89 @@
 
     function prevStep() { if(currentStepIdx > 0) { currentStepIdx--; renderQuestion(); } else { goToRacerSelect(); } }
 
-    function finishRace() {
+    async function finishRace() {
         const income = parseInt(userData['income']) || 5000;
         let mult = 1.0;
         
         const prem = parseInt(userData['premium']||0);
         const p13 = parseInt(userData['p13']||0);
         const p25 = parseInt(userData['p25']||0);
-        
         const s_prod = prem >= 100 ? 10 : (prem >= 70 ? 8 : (prem >= 50 ? 6 : 4));
         const s_eff = (prem / (parseFloat(userData['count'])||1)) >= 15 ? 10 : 7;
-        
-        // 유지율 스코어 (13회와 25회 가중치 계산)
         const s_qual = ((p13 >= 95 ? 10 : 7) + (p25 >= 85 ? 10 : 7)) / 2;
-        
-        const s_exp = (userData['mdrt'] > 0 ? 5 : 0) + (userData['license'] > 0 ? 3 : 2);
+        const s_exp = (userData['mdrt'] !== '없음' ? 5 : 0) + (userData['license'] !== '기본' ? 3 : 1);
         const s_lead = parseInt(userData['team_size']||0) >= 5 ? 10 : 6;
 
         mult += (s_prod + s_qual + s_eff + s_exp + s_lead) * 0.015;
-        let final = Math.round(income * mult * 0.6); 
-        let pct = Math.round((final/income)*100);
+        let finalPriceVal = Math.round(income * mult * 0.6); 
+        let finalPctVal = Math.round((finalPriceVal/income)*100);
 
         showScreen('screen-result');
         document.getElementById('res-name').innerText = userData['userName'];
         document.getElementById('res-role').innerText = userData['racer'].name;
-        document.getElementById('res-icon').innerText = userData['racer'].icon;
+        document.getElementById('res-icon').innerText = getEmoji(userData['racer'].id);
 
         let current = 0;
         const timer = setInterval(() => {
-            current += Math.ceil(final / 30);
-            if(current >= final) { current = final; clearInterval(timer); }
+            current += Math.ceil(finalPriceVal / 30);
+            if(current >= finalPriceVal) { current = finalPriceVal; clearInterval(timer); }
             document.getElementById('finalPrice').innerText = current.toLocaleString();
-            document.getElementById('scoreDisplay').innerText = current.toString().substring(0,3);
         }, 30);
-        document.getElementById('finalPct').innerText = pct;
+        document.getElementById('finalPct').innerText = finalPctVal;
         document.getElementById('aiAdvice').innerText = "당신은 서킷의 지배자! 현재 몸값보다 훨씬 더 높은 가치를 인정받을 자격이 충분합니다.";
 
         renderRadarChart([s_prod, s_eff, s_qual, s_exp, s_lead]);
+
+        // --- 백엔드 데이터 전송 및 순번 받기 ---
+        const payload = {
+            timestamp: new Date().toLocaleString(),
+            name: userData['userName'],
+            phone: userData['phone'],
+            gender: userData['gender'],
+            region: userData['region'],
+            rank: userData['rank'],
+            team_size: userData['team_size'],
+            recruit_avg: userData['recruit_avg'],
+            career: userData['career'],
+            income: userData['income'],
+            history: userData['history'],
+            style: userData['style'],
+            client: userData['client'],
+            portfolio: userData['port'],
+            continuance_w: userData['w'],
+            perf_count: userData['count'],
+            perf_premium: userData['premium'],
+            mdrt: userData['mdrt'],
+            p13: userData['p13'],
+            p25: userData['p25'],
+            needs: userData['needs'],
+            final_bounty: finalPriceVal,
+            racer_type: userData['racer'].name,
+            stats: { s_prod, s_eff, s_qual, s_exp, s_lead }
+        };
+
+        try {
+            const response = await fetch(BACKEND_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const res = await response.json();
+            if (res.success) { 
+                // 서버에서 받은 순번 표시
+                document.getElementById('res-entry-box').style.display = 'block';
+                document.getElementById('res-entry-no').innerText = res.entryNo.toString().padStart(3, '0');
+                document.getElementById('scoreDisplay').innerText = res.entryNo;
+            }
+        } catch (err) {
+            console.error('Failed to send data to backend:', err);
+        }
     }
 
     function renderRadarChart(data) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        new Chart(ctx, {
+        if(radarChart) radarChart.destroy();
+        radarChart = new Chart(ctx, {
             type: 'radar',
             data: {
                 labels: ['생산성', '효율성', '유지율', '전문성', '리더십'],
