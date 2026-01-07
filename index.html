@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SUPER SALES KART : PROFESSIONAL</title>
+    <title>SUPER SALES KART : PROFESSIONAL FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -16,7 +16,7 @@
             --kart-yellow: #fff300;
             --kart-green: #37d300;
             --kart-dark: #121212;
-            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.95);
             --glass-border: rgba(255, 255, 255, 0.4);
         }
 
@@ -57,10 +57,9 @@
 
         .scene {
             flex: 1; position: relative; z-index: 10; display: flex; flex-direction: column;
-            align-items: center; padding: 20px; padding-bottom: 80px; overflow-y: auto; width: 100%;
+            align-items: center; padding: 20px; padding-bottom: 120px; overflow-y: auto; width: 100%;
         }
         .scene::-webkit-scrollbar { display: none; }
-        .center-scene { justify-content: center; }
 
         .intro-logo {
             font-family: 'Fredoka', sans-serif; font-size: 44px; line-height: 1.1; font-weight: 700;
@@ -77,9 +76,7 @@
             background: linear-gradient(to bottom, #ff5e3a 0%, #ff2a00 100%);
             border: 2px solid rgba(255,255,255,0.5); border-radius: 50px;
             color: white; font-size: 24px; font-weight: 900; padding: 16px 60px;
-            box-shadow: 0 6px 0 #cc2200, 0 15px 30px rgba(0,0,0,0.4);
-            transition: transform 0.1s, box-shadow 0.1s;
-            cursor: pointer;
+            box-shadow: 0 6px 0 #cc2200; cursor: pointer; transition: 0.1s;
         }
         .kart-btn:active { transform: translateY(6px); box-shadow: none; }
 
@@ -91,20 +88,17 @@
         .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
         .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
 
-        .racer-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
         .racer-card {
             background: white; border-radius: 16px; padding: 12px;
             display: flex; align-items: center; cursor: pointer;
             border: 2px solid #eee; box-shadow: 0 4px 0 #ddd;
-            transition: all 0.2s;
+            transition: all 0.2s; margin-bottom: 10px;
         }
         .racer-card:hover { background: #fff9c4; border-color: var(--kart-yellow); transform: translateY(-2px); }
         .racer-img-box {
-            width: 48px; height: 48px; border-radius: 50%; background: #eee; margin-right: 15px;
+            width: 48px; height: 48px; border-radius: 50%; background: #f0f0f0; margin-right: 15px;
             display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #000;
         }
-        .racer-info h4 { font-weight: 800; color: #333; font-size: 15px; }
-        .racer-info p { font-size: 11px; color: #777; }
 
         .option-btn {
             display: block; width: 100%; text-align: left;
@@ -116,7 +110,6 @@
         }
         .option-btn.selected { background: #fff9c4; border-color: var(--kart-yellow); box-shadow: 0 4px 0 #fbc02d; }
         .option-btn.selected::after { content: '🏁'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
-        .option-btn:active { transform: translateY(4px); box-shadow: none; }
 
         .nav-btn {
             flex: 1; padding: 14px; text-align: center; border-radius: 16px;
@@ -129,17 +122,30 @@
             width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px;
             font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #fff;
         }
-        .input-label { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 6px; display: block; text-align: center; }
+
+        .terms-box { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; margin-bottom: 10px; }
+        .terms-detail { display: none; font-size: 10px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc; line-height: 1.5; text-align: left; }
+        .terms-detail.show { display: block; }
+        .view-btn { font-size: 11px; color: var(--kart-blue); text-decoration: underline; font-weight: bold; cursor: pointer; }
+
+        .impact-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000; font-weight: 900; padding: 2px 10px; border-radius: 6px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 9px; display: inline-block;
+        }
+
+        .global-footer {
+            position: absolute; bottom: 15px; left: 0; right: 0;
+            text-align: center; z-index: 100; pointer-events: none;
+        }
+        .copyright-text {
+            font-size: 9px; color: #64748b; font-weight: 700; opacity: 0.7;
+            letter-spacing: -0.2px; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
 
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
-
-        /* Terms Box Style */
-        .terms-box { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .terms-detail { display: none; font-size: 10px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc; line-height: 1.5; max-height: 100px; overflow-y: auto; text-align: left; }
-        .terms-detail.show { display: block; }
-        .view-btn { font-size: 11px; color: var(--kart-blue); text-decoration: underline; font-weight: bold; cursor: pointer; }
 
         .entry-no-badge {
             background: #000; color: #fff; font-family: 'Fredoka', sans-serif;
@@ -154,7 +160,7 @@
 <div class="kart-frame">
     <div class="road-bg"></div>
 
-    <!-- HUD -->
+    <!-- HUD Area -->
     <div class="hud">
         <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-gray-100">LAP</span>
@@ -167,77 +173,106 @@
     </div>
 
     <!-- 1. Intro Screen -->
-    <div id="screen-intro" class="scene center-scene fade-in">
+    <div id="screen-intro" class="scene flex justify-center fade-in">
         <div class="text-center">
             <div class="relative mb-6">
                 <i class="ph-duotone ph-steering-wheel text-8xl text-white drop-shadow-lg"></i>
             </div>
             <h1 class="intro-logo">SUPER<br>SALES KART</h1>
-            <div class="logo-sub">보험영업자 내 가치 측정하기</div>
+            <div class="logo-sub">보험영업인 내 가치 측정하기</div>
         </div>
-        <button class="kart-btn" onclick="goToRacerSelect()">시작하기</button>
+        <button class="kart-btn" onclick="goToRacerSelect()">RACE START!</button>
     </div>
 
     <!-- 2. Racer Select -->
     <div id="screen-racer" class="scene hidden fade-in">
         <div class="glass-panel">
-            <div class="q-header">
-                <span class="q-tag">SELECT PLAYER</span>
-                <span class="text-xs text-gray-400 font-bold" id="racer-progress">1 / 18</span>
-            </div>
+            <div class="q-header"><span class="q-tag">SELECT PLAYER</span><span class="text-xs text-gray-400 font-bold" id="racer-progress">1 / 22</span></div>
             <p class="q-text">나의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
-            <div id="racer-list" class="racer-grid"></div>
+            <div id="racer-list" class="flex flex-col w-full"></div>
         </div>
     </div>
 
-    <!-- 3. Dynamic Questions -->
+    <!-- 3. Dynamic Question Screen -->
     <div id="screen-q" class="scene hidden fade-in">
         <div class="glass-panel">
-            <div class="q-header">
-                <span class="q-tag" id="q-category">DRIVING</span>
-                <span class="text-xs text-gray-400 font-bold" id="q-progress">2 / 18</span>
-            </div>
+            <div class="q-header"><span class="q-tag" id="q-category">DRIVING</span><span class="text-xs text-gray-400 font-bold" id="q-progress">2 / 22</span></div>
             <p class="q-text" id="q-desc">...</p>
             <div id="area-choice" class="flex flex-col"></div>
             <div id="area-input" class="hidden"></div>
         </div>
-        <div class="flex gap-3 w-full max-w-[400px] mt-2">
+        <div class="flex gap-3 w-full max-w-[400px] mt-2 px-4">
             <button class="nav-btn btn-back w-1/3" onclick="prevStep()">BACK</button>
-            <button class="nav-btn btn-next w-2/3" id="btn-next-manual" onclick="handleNext()">NEXT ▶</button>
+            <button class="nav-btn btn-next w-2/3 hidden" id="btn-next-manual" onclick="handleNext()">NEXT ▶</button>
         </div>
     </div>
 
     <!-- 4. Result Screen -->
     <div id="screen-result" class="scene hidden fade-in" style="padding-top:40px;">
         <div class="glass-panel text-center relative">
-            <div class="entry-no-badge" id="res-entry-box" style="display:none;">
-                PLAYER NO.<span id="res-entry-no">---</span>
-            </div>
-
-            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4">
-                <span id="res-racer-icon">🏆</span>
-            </div>
-            <h2 class="text-2xl font-black text-gray-800 mb-1">FINISH!</h2>
+            <div class="entry-no-badge" id="res-entry-box" style="display:none;">PLAYER NO.<span id="res-entry-no">---</span></div>
+            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4"><span id="res-racer-icon">🏆</span></div>
+            <h2 class="text-2xl font-black text-gray-800 mb-1 text-center">FINISH!</h2>
             <p class="text-xs text-gray-500 font-bold mb-6 uppercase tracking-widest text-center">Course Clear • New Record</p>
 
+            <!-- 가치 섹션 -->
             <div class="bg-gradient-to-br from-blue-50 to-sky-50 p-4 rounded-2xl border-2 border-white shadow-inner text-center mb-6">
-                <p class="text-[10px] font-bold text-blue-500 tracking-widest mb-1 text-center uppercase">Estimated Bounty</p>
-                <div class="text-3xl font-black text-gray-800 text-center">
-                    <span id="finalPrice">0</span> <span class="text-lg text-gray-500">만원</span>
-                </div>
-                <p class="text-xs font-bold text-gray-400 mt-1 text-center">연봉 대비 <span class="text-red-500" id="finalPct">0</span>% 인정</p>
+                <p class="text-[10px] font-bold text-blue-500 tracking-widest mb-1 text-center uppercase font-bold">Estimated Bounty</p>
+                <div class="text-3xl font-black text-gray-800 text-center"><span id="finalPrice">0</span> <span class="text-lg text-gray-500 font-bold">만원</span></div>
+                <p class="text-[10px] font-bold text-gray-400 mt-1 text-center">시장 기준 대비 <span class="text-red-500" id="finalPct">0</span>% 인정</p>
             </div>
 
-            <div style="height: 200px; width: 100%; margin-bottom: 20px;">
-                <canvas id="radarChart"></canvas>
+            <div style="height: 180px; width: 100%; margin-bottom: 20px;"><canvas id="radarChart"></canvas></div>
+
+            <!-- 예상 수수료 비전 섹션 -->
+            <div class="bg-blue-900/5 border-2 border-blue-100 p-4 rounded-3xl mb-6 text-center">
+                <h3 class="text-[11px] font-black text-blue-800 mb-4 flex items-center justify-center gap-1 tracking-wider uppercase">
+                    <i class="ph-fill ph-rocket-launch text-blue-500"></i> Potential Earnings
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-3 px-1">
+                    <!-- 익월 예상 수수료 -->
+                    <div class="bg-white p-3 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
+                        <div class="impact-badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); width: 100%; font-size: 9px; padding: 2px 0;">익월 예상 수수료율 750%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">익월 예상<br>수수료</p>
+                        <p class="text-xl font-black text-blue-600 text-center"><span id="resNextMonthPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
+                    </div>
+                    
+                    <!-- 13차월 예상 수수료 -->
+                    <div class="bg-white p-3 rounded-2xl border border-red-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
+                        <div class="impact-badge" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE0000 100%); color: #fff; width: 100%; font-size: 9px; padding: 2px 0;">13차월 예상 수수료율 1300%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">13차월 예상<br>수수료</p>
+                        <p class="text-xl font-black text-red-600 text-center"><span id="resTotalYearPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
+                    </div>
+                </div>
+
+                <div class="mt-4 px-1 text-center">
+                    <p class="text-[9px] text-blue-600 font-bold mb-1 leading-normal">
+                        ※ 위 수치는 기입하신 평균 월납보험료 <span id="resRefPremium" class="underline font-black">0</span>만원을<br>기준으로 산출된 수치입니다.
+                    </p>
+                    <p class="text-[8px] text-gray-400 leading-tight">
+                        * 건강보험 판매 기준, 생명보험사 수수료 평균치 산출<br>
+                        * 예상 수수료율은 매월 시상의 평균치가 포함된 예상치이며,<br>실제 수수료는 계약 조건 및 상품군에 따라 차이가 발생할 수 있습니다.
+                    </p>
+                </div>
             </div>
             
-            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left">
-                <strong class="text-yellow-400 block mb-1 text-xs">📢 PIT CREW'S ADVICE:</strong>
+            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left mb-6">
+                <strong class="text-yellow-400 block mb-1 text-xs font-black">📢 PIT CREW'S ADVICE:</strong>
                 <span id="aiAdvice">데이터 분석 중...</span>
             </div>
+
+            <!-- 하단 저작권 -->
+            <div class="pt-2 text-center opacity-60 border-t border-gray-100">
+                <p class="text-[8px] text-gray-400 text-center">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
+            </div>
         </div>
-        <button class="kart-btn w-full text-lg mt-4" onclick="location.reload()">다시 하기</button>
+        <button class="kart-btn w-full text-lg mt-4 mb-10" onclick="location.reload()">다시 하기</button>
+    </div>
+
+    <!-- 전역 저작권 푸터 -->
+    <div class="global-footer" id="global-footer">
+        <p class="copyright-text">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
     </div>
 </div>
 
@@ -253,9 +288,10 @@
     ];
 
     const questions = [
+        { id: 'affiliation', title: '현재 소속', text: '현재 어떤 보험사에서 활동중이신가요?', type: 'choice', opts: ['생명보험 (원수사)', '손해보험 (원수사)', 'GA (법인대리점)'] },
         { id: 'rank', title: '직급', text: '현재 직급을 선택하세요.', type: 'choice', opts: ['팀원', '팀장', '지점장', '본부장'] },
         { id: 'team_size', title: '조직 규모', text: '산하 팀원은 몇 명인가요?', type: 'input', label: '인원(명)', itype: 'number' },
-        { id: 'recruit_avg', title: '리크루팅', text: '연간 도입 인원은 몇 명인가요?', type: 'input', label: '명', itype: 'number' },
+        { id: 'recruit_avg', title: '리크루팅', text: '연간 직접 채용 인원은?', type: 'input', label: '명', itype: 'number' },
         { id: 'license', title: '자격', text: '보유 자격 종류를 선택하세요.', type: 'choice', opts: ['기본 자격', '+ 변액 보험 자격', '+ 금융 전문 자격'] },
         { id: 'career', title: '경력', text: '보험 영업 경력이 어떻게 되나요?', type: 'choice', opts: ['1년 미만', '1~3년', '3~5년', '5~10년', '10년 이상'] },
         { id: 'income', title: '연봉', text: '작년 원천징수 소득을 입력하세요.', type: 'input', label: '만원', itype: 'number' },
@@ -263,15 +299,15 @@
         { id: 'style', title: '방식', text: '주력 영업 방식을 선택하세요.', type: 'choice', opts: ['개척영업', '지인/소개영업', 'DB영업', '이관고객영업', '기타'] },
         { id: 'client', title: '고객', text: '주력 고객층은 누구인가요?', type: 'choice', opts: ['직장인', '주부', '자영업자', '법인/전문직', '기타'] },
         { id: 'port', title: '상품', text: '주력 판매 상품군은?', type: 'choice', opts: ['보장성', '저축성', '자동차/화재', '복합'] },
-        { id: 'w', title: '연속영업', text: '연속 청약(W) 기록을 선택하세요.', type: 'choice', opts: ['없음', '1W 20주', '2W 20주', '3W 50주'] },
+        { id: 'w', title: '활동기록', text: '연속 청약(W) 기록을 선택하세요.', type: 'choice', opts: ['없음', '1W 20주+', '2W 20주+', '3W 50주+'] },
         { id: 'perf', title: '평균 실적', text: '월 평균 실적 데이터를 입력하세요.', type: 'multi-input', inputs: [{id:'count', label:'월 건수', type:'number', p:'건'}, {id:'premium', label:'월 보험료', type:'number', p:'만원'}] },
         { id: 'mdrt', title: 'MDRT', text: 'MDRT 달성 기록을 선택하세요.', type: 'choice', opts: ['없음', 'MDRT', 'COT', 'TOT'] },
         { id: 'mdrt_cnt', title: 'MDRT 횟수', text: 'MDRT 달성 횟수는?', type: 'choice', opts: ['1회', '2회', '3~4회', '5회 이상'], condition: (d) => d.mdrt !== '없음' },
         { id: 'qual', title: '유지율', text: '계약 유지율을 입력해주세요.', type: 'multi-input', inputs: [{id:'p13', label:'13회차 (%)', type:'number', p:'%'}, {id:'p25', label:'25회차 (%)', type:'number', p:'%'}] },
-        { id: 'needs', title: '현재 불만', text: '현재 조직에 불만이 있다면 어떤 점인가요?', type: 'choice', opts: ['DB 지원 부족', '수수료/보상 체계', '교육 시스템 부재', '조직 문화/비전', '불만 없음'] },
+        { id: 'needs', title: '현재 불만', text: '현재 조직에서 가장 아쉬운 점은?', type: 'choice', opts: ['DB 지원 부족', '수수료/보상 체계', '교육 시스템 부재', '조직 문화/비전', '불만 없음'] },
         { id: 'info', title: '기본 정보', text: '리포트 발급을 위한 정보 입력', type: 'multi-input', inputs: [{id:'userName', label:'이름', type:'text', p:'성함'}, {id:'region', label:'지역', type:'text', p:'활동지역'}] },
         { id: 'gender', title: '성별', text: '성별을 선택해주세요.', type: 'choice', opts: ['남성', '여성'] },
-        { id: 'phone', title: '연락처', text: '결과 수신 및 동의를 진행하세요.', type: 'phone' }
+        { id: 'phone', title: '연락처', text: '결과 수신 및 약관 동의', type: 'phone' }
     ];
 
     let userData = {};
@@ -281,6 +317,8 @@
     function showScreen(id) {
         document.querySelectorAll('.scene').forEach(el => el.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
+        if(id === 'screen-result') document.getElementById('global-footer').classList.add('hidden');
+        else document.getElementById('global-footer').classList.remove('hidden');
     }
 
     function goToRacerSelect() {
@@ -290,21 +328,17 @@
         racerList.forEach(r => {
             const el = document.createElement('div');
             el.className = 'racer-card';
-            el.innerHTML = `<div class="racer-img-box" style="width:48px;height:48px;border-radius:50%;background:#eee;margin-right:15px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid #000;">${r.icon}</div>
+            el.innerHTML = `<div class="racer-img-box">${r.icon}</div>
                             <div class="flex-1 text-left">
-                                <h4 class="font-bold text-sm">${r.name}</h4>
-                                <p class="text-[10px] text-gray-500 text-left">${r.desc}</p>
+                                <h4 class="font-bold text-sm text-gray-800">${r.name}</h4>
+                                <p class="text-[10px] text-gray-500">${r.desc}</p>
                             </div>`;
             el.onclick = () => { userData['racer'] = r; startRace(); };
             list.appendChild(el);
         });
     }
 
-    function startRace() {
-        currentIdx = 0;
-        showScreen('screen-q');
-        renderQuestion();
-    }
+    function startRace() { currentIdx = 0; showScreen('screen-q'); renderQuestion(); }
 
     function renderQuestion() {
         while (currentIdx < questions.length) {
@@ -316,7 +350,7 @@
         const q = questions[currentIdx];
         const lapNum = currentIdx + 2; 
         document.getElementById('stepIndicator').innerText = `LAP ${lapNum}`;
-        document.getElementById('q-progress').innerText = `${lapNum} / 21`;
+        document.getElementById('q-progress').innerText = `${lapNum} / ${questions.length + 1}`;
         document.getElementById('q-desc').innerText = q.text;
 
         const cArea = document.getElementById('area-choice'), iArea = document.getElementById('area-input');
@@ -337,10 +371,7 @@
             iArea.classList.remove('hidden');
             document.getElementById('btn-next-manual').classList.remove('hidden');
             q.inputs.forEach(inp => {
-                iArea.innerHTML += `
-                    <label class="input-label">${inp.label}</label>
-                    <input type="${inp.type}" id="inp_${inp.id}" class="kart-input mb-4" placeholder="${inp.p} 입력..." value="${userData[inp.id] || ''}">
-                `;
+                iArea.innerHTML += `<label class="text-[11px] font-bold text-gray-500 block mb-1">${inp.label}</label><input type="${inp.type}" id="inp_${inp.id}" class="kart-input mb-4" placeholder="${inp.p} 입력..." value="${userData[inp.id] || ''}">`;
             });
         } else if (q.type === 'phone') {
             iArea.classList.remove('hidden');
@@ -348,43 +379,15 @@
             iArea.innerHTML = `
                 <div class="flex gap-2 items-center justify-center mb-4">
                     <input type="text" value="010" readonly class="kart-input w-24 bg-gray-100 text-gray-400">
-                    <input type="tel" id="p_body" class="kart-input flex-1" maxlength="8" placeholder="나머지 8자리 숫자" value="${userData['p_body'] || ''}">
+                    <input type="tel" id="p_body" class="kart-input flex-1" maxlength="8" placeholder="나머지 8자리 숫자">
                 </div>
-                
-                <!-- 개인정보활용동의 -->
                 <div class="terms-box">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-gray-700">
-                            <input type="checkbox" id="agree1" class="w-4 h-4 accent-blue-500"> [필수] 개인정보 수집 및 이용 동의
-                        </label>
-                        <span class="view-btn" onclick="toggleTerms('detail1')">자세히 보기</span>
-                    </div>
-                    <div id="detail1" class="terms-detail">
-                        메타리치 파트너스지사(이하 '회사')는 인재 채용 및 상담을 목적으로 아래와 같이 개인정보를 수집·이용합니다.<br><br>
-                        1. 수집 항목: 성명, 연락처, 경력사항, 연봉 정보, 실적 데이터, 자격증 보유 현황 등 설문 응답 일체<br>
-                        2. 수집 목적: 우수 인재 채용을 위한 시장 가치 평가, 채용 상담 및 입사 제안, 통계 분석<br>
-                        3. 보유 및 이용 기간: <b>수집일로부터 3년</b> (단, 정보 주체의 삭제 요청 시 즉시 파기)<br>
-                        4. 위탁 업체: <b>(주)파트너스컴퍼니</b> (시스템 관리 및 데이터 처리 업무 위탁)<br><br>
-                        귀하는 동의를 거부할 권리가 있으나, 동의 거부 시 가치 측정 결과 확인 및 채용 상담 서비스 이용이 제한됩니다.
-                    </div>
+                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree1" class="w-4 h-4 accent-blue-500"> [필수] 개인정보 수집 및 이용 동의</label><span class="view-btn" onclick="toggleTerms('detail1')">보기</span></div>
+                    <div id="detail1" class="terms-detail">메타리치 파트너스지사는 채용 및 상담을 목적으로 성명, 연락처, 실적 등을 수집합니다. (위탁: (주)파트너스컴퍼니)</div>
                 </div>
-
-                <!-- 제3자활용동의 -->
                 <div class="terms-box">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-gray-700">
-                            <input type="checkbox" id="agree2" class="w-4 h-4 accent-blue-500"> [필수] 제3자 정보 제공 동의
-                        </label>
-                        <span class="view-btn" onclick="toggleTerms('detail2')">자세히 보기</span>
-                    </div>
-                    <div id="detail2" class="terms-detail">
-                        회사는 인재 채용 및 전문적인 커리어 상담을 위해 아래와 같이 제3자에게 정보를 제공합니다.<br><br>
-                        1. 제공받는 자: <b>메타리치 파트너스지사 산하 채용 담당자 및 관리자</b><br>
-                        2. 제공 목적: 맞춤형 채용 정보 안내, 경력 관리 컨설팅, 입사 전형 진행<br>
-                        3. 제공 항목: 성명, 연락처, 경력, 실적 등 수집된 개인정보 일체<br>
-                        4. 보유 기간: <b>제공 목적 달성 시까지</b><br><br>
-                        귀하는 제3자 정보 제공에 대한 동의를 거부할 수 있으며, 거부 시 본 서비스를 통한 전문적인 채용 제안을 받으실 수 없습니다.
-                    </div>
+                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree2" class="w-4 h-4 accent-blue-500"> [필수] 제3자 정보 제공 동의</label><span class="view-btn" onclick="toggleTerms('detail2')">보기</span></div>
+                    <div id="detail2" class="terms-detail">수집된 데이터는 최적의 채용 제안을 위해 관리자에게 제공될 수 있습니다.</div>
                 </div>
             `;
         } else {
@@ -394,11 +397,7 @@
         }
     }
 
-    // 약관 토글 함수
-    window.toggleTerms = function(id) {
-        const el = document.getElementById(id);
-        el.classList.toggle('show');
-    }
+    window.toggleTerms = (id) => document.getElementById(id).classList.toggle('show');
 
     function handleNext() {
         const q = questions[currentIdx];
@@ -406,27 +405,20 @@
             let valid = true;
             q.inputs.forEach(inp => {
                 const val = document.getElementById(`inp_${inp.id}`).value;
-                if(!val) valid = false;
-                userData[inp.id] = val;
+                if(!val) valid = false; userData[inp.id] = val;
             });
             if(!valid) return alert('모든 항목을 입력해 주세요!');
         } else if (q.type === 'phone') {
             const body = document.getElementById('p_body').value;
-            const agree1 = document.getElementById('agree1').checked;
-            const agree2 = document.getElementById('agree2').checked;
-
-            if(body.length < 8) return alert('연락처 8자리를 모두 입력해 주세요!');
-            if(!agree1 || !agree2) return alert('필수 약관에 모두 동의하셔야 결과 확인이 가능합니다.');
-
-            userData['p_body'] = body;
+            const agree1 = document.getElementById('agree1').checked, agree2 = document.getElementById('agree2').checked;
+            if(body.length < 8) return alert('연락처 8자리를 입력해 주세요!');
+            if(!agree1 || !agree2) return alert('필수 약관에 동의하셔야 결과 확인이 가능합니다.');
             userData['phone'] = `010-${body.substring(0,4)}-${body.substring(4,8)}`;
         } else if (q.type === 'input') {
             const val = document.getElementById('q-input').value;
-            if(!val) return alert('내용을 입력해 주세요!');
-            userData[q.id] = val;
+            if(!val) return alert('내용을 입력해 주세요!'); userData[q.id] = val;
         }
-        currentIdx++;
-        renderQuestion();
+        currentIdx++; renderQuestion();
     }
 
     function prevStep() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } else { goToRacerSelect(); } }
@@ -434,49 +426,57 @@
     async function submitData() {
         let bonus = 0;
         const ts = parseInt(userData.team_size || 0);
-        if(ts >= 10) bonus += 5; else if(ts >= 5) bonus += 4; else if(ts >= 3) bonus += 3; else if(ts > 0) bonus += 2;
-        if(userData.license === '+ 금융 전문 자격') bonus += 1;
+        if(ts >= 10) bonus += 5; else if(ts >= 5) bonus += 4; else if(ts >= 3) bonus += 3;
         const cr = userData.career;
-        if(cr === '1년 미만') bonus -= 2; else if(cr === '3~5년') bonus += 1; else if(cr === '5~10년') bonus += 2; else if(cr === '10년 이상') bonus += 3;
-        const hisStr = userData.history;
-        if(hisStr === '1회') bonus -= 1; else if(hisStr === '2회') bonus -= 3; else if(hisStr === '3회 이상') bonus -= 5;
-        const sty = userData.style;
-        if(sty === '지인/소개영업') bonus += 1; else if(sty === 'DB영업') bonus += 3; else if(sty === '기타') bonus += 0.5;
-        if(userData.port === '보장성') bonus += 3; else if(userData.port === '저축성') bonus += 1;
-        const w = userData.w;
-        if(w === '1W 20주') bonus += 5; else if(w === '2W 20주') bonus += 10; else if(w === '3W 50주') bonus += 15;
+        if(cr === '1년 미만') bonus -= 2; else if(['3~5년','5~10년','10년 이상'].includes(cr)) bonus += (cr==='10년 이상'?3:cr==='5~10년'?2:1);
+        if(userData.style === 'DB영업') bonus += 3;
         const cnt = parseInt(userData.count || 0);
-        if(cnt === 0) bonus -= 7; else if(cnt === 1) bonus -= 8; else if(cnt === 2) bonus -= 7; else if(cnt === 3) bonus -= 6; else if(cnt >= 11) bonus += 7; else if(cnt >= 8) bonus += 5; else if(cnt >= 5) bonus += 3;
         const prem = parseInt(userData.premium || 0);
-        if(prem >= 100) bonus += 8; else if(prem >= 70) bonus += 6; else if(prem >= 60) bonus += 4.5; else if(prem >= 50) bonus += 3; else if(prem >= 40) bonus += 1.5; else if(prem < 10) bonus -= 5; else if(prem < 20) bonus -= 3; else if(prem < 30) bonus -= 1;
+        if(prem >= 100) bonus += 8; else if(prem >= 60) bonus += 5;
         const avg = prem / (cnt || 1);
-        if(avg >= 20) bonus += 6; else if(avg >= 15) bonus += 5; else if(avg >= 11) bonus += 4; else if(avg >= 9) bonus += 3; else if(avg >= 7) bonus += 2; else if(avg >= 6) bonus += 0; else if(avg >= 4) bonus -= 1; else if(avg >= 2) bonus -= 1; else if(avg < 2) bonus -= 3;
-        const m = userData.mdrt;
-        if(m === 'TOT') bonus += 10; else if(m === 'COT') bonus += 7; else if(m === 'MDRT') bonus += 3;
+        if(avg >= 15) bonus += 5;
         const p13 = parseInt(userData.p13 || 0);
-        if(p13 <= 70) bonus -= 5; else if(p13 <= 75) bonus -= 3; else if(p13 <= 80) bonus -= 1; else if(p13 > 95) bonus += 3; else if(p13 > 85) bonus += 1;
+        if(p13 > 90) bonus += 3;
 
-        const income = parseInt(userData.income) || 5000;
-        const finalVal = Math.round((income * 0.55) * (1 + bonus / 100));
+        // 최종 몸값 계산 분기
+        let baseValue;
+        if (userData.career === '1년 미만') {
+            baseValue = 1500; // 신입 베이스 고정
+        } else {
+            let incomeInput = parseInt(userData.income) || 5000;
+            baseValue = incomeInput * 0.55;
+        }
+        const finalVal = Math.round(baseValue * (1 + bonus / 100));
+
+        // 수당 계산
+        const nextMonthPay = Math.round(prem * 7.5);
+        const totalYearPay = Math.round(prem * 13.0);
 
         showScreen('screen-result');
         document.getElementById('res-racer-icon').innerText = userData.racer.icon;
         document.getElementById('finalPrice').innerText = finalVal.toLocaleString();
-        document.getElementById('finalPct').innerText = Math.round((finalVal/income)*100);
-        document.getElementById('aiAdvice').innerText = `${userData.userName}님, 분석 결과 당신의 가치는 시장 상위권의 궤적을 그리고 있습니다. 특히 가중치 ${bonus}% 가산은 매우 우수한 성취입니다!`;
+        
+        const referenceValue = (userData.career === '1년 미만') ? 1500 : (parseInt(userData.income) || 5000);
+        document.getElementById('finalPct').innerText = Math.round((finalVal / referenceValue) * 100);
+        
+        document.getElementById('resNextMonthPay').innerText = nextMonthPay.toLocaleString();
+        document.getElementById('resTotalYearPay').innerText = totalYearPay.toLocaleString();
+        document.getElementById('resRefPremium').innerText = prem.toLocaleString();
 
-        renderRadarChart([Math.min(10, prem/12+2), Math.min(10, avg/2+1), Math.min(10, p13/10), (m!=='없음'?9:5), Math.min(10, ts/1.5+3)]);
+        document.getElementById('aiAdvice').innerText = `${userData.userName}님, 분석 결과 당신의 질주는 업계 상위권의 궤적을 그리고 있습니다. 특히 가중치 ${bonus}% 가산은 시장에서도 매우 우수한 성취입니다!`;
+
+        renderRadarChart([Math.min(10, prem/12+2), Math.min(10, avg/2+1), Math.min(10, p13/10), 5, Math.min(10, ts/1.5+3)]);
 
         try {
             const res = await fetch(BACKEND_URL, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...userData, final_bounty: finalVal, timestamp: new Date().toLocaleString() })
             });
-            const data = await res.json();
-            if(data.success) {
+            const resData = await res.json();
+            if(resData.success) {
                 document.getElementById('res-entry-box').style.display = 'block';
-                document.getElementById('res-entry-no').innerText = data.entryNo.toString().padStart(3, '0');
-                document.getElementById('scoreDisplay').innerText = data.entryNo;
+                document.getElementById('res-entry-no').innerText = resData.entryNo.toString().padStart(3, '0');
+                document.getElementById('scoreDisplay').innerText = resData.entryNo;
             }
         } catch(e) { console.error(e); }
     }
