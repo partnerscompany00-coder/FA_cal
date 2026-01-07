@@ -35,13 +35,12 @@ async function createSheetsInstance() {
     }
 }
 
-app.get('/', (req, res) => res.send('Backend is Live! 🏎️'));
+app.get('/', (req, res) => res.send('Backend is Live with Affiliation support! 🏎️'));
 
 app.post('/api/submit', async (req, res) => {
     try {
         const data = req.body;
-        // 디버깅을 위해 수신 데이터 로그 출력
-        console.log(`\n[데이터 수신] 성함: ${data.userName || data.name}`);
+        console.log(`\n[데이터 수신] 성함: ${data.userName || data.name} / 소속: ${data.affiliation}`);
 
         const sheets = await createSheetsInstance();
         const SHEET_NAME = 'sheet1'; 
@@ -54,7 +53,10 @@ app.post('/api/submit', async (req, res) => {
         const rows = getRows.data.values;
         const entryNo = rows ? rows.length : 1;
 
-        // 구글 시트 컬럼 매핑 (프론트엔드 userData 키값과 일치시킴)
+        /**
+         * [수정됨] 구글 시트 컬럼 매핑 - 'affiliation' 필드 추가
+         * 시트 컬럼 순서: A:순번, B:일시, C:이름, D:연락처, E:성별, F:지역, G:소속(NEW), H:직급 ...
+         */
         const row = [
             entryNo,                                      // A: 순번
             data.timestamp || new Date().toLocaleString(), // B: 일시
@@ -62,25 +64,26 @@ app.post('/api/submit', async (req, res) => {
             data.phone,                                   // D: 연락처
             data.gender,                                  // E: 성별
             data.region,                                  // F: 지역
-            data.rank,                                    // G: 직급
-            data.team_size,                               // H: 조직 규모
-            data.recruit_avg,                             // I: 리크루팅
-            data.career,                                  // J: 보험 경력
-            data.income,                                  // K: 원천 소득
-            data.history,                                 // L: 이직 횟수
-            data.style,                                   // M: 영업 방식
-            data.client,                                  // N: 주력 고객
-            data.port,                                    // O: 주력 상품군 (수정됨)
-            data.w,                                       // P: W 연속영업 (수정됨)
-            data.count,                                   // Q: 월 평균 건수 (수정됨)
-            data.premium,                                 // R: 평균월납보험료 (수정됨)
-            data.mdrt,                                    // S: MDRT 경험
-            data.p13,                                     // T: 13회차 유지율
-            data.p25,                                     // U: 25회차 유지율
-            data.needs,                                   // V: 현재 불만/니즈
-            data.final_bounty,                             // W: 최종 이적료
-            data.racer ? data.racer.name : 'N/A',         // X: 선택 캐릭터 (수정됨)
-            data.stats ? JSON.stringify(data.stats) : ''  // Y: 능력치 데이터
+            data.affiliation || 'N/A',                    // G: [추가] 소속 보험사
+            data.rank,                                    // H: 직급
+            data.team_size,                               // I: 조직 규모
+            data.recruit_avg,                             // J: 리크루팅
+            data.career,                                  // K: 보험 경력
+            data.income,                                  // L: 원천 소득
+            data.history,                                 // M: 이직 횟수
+            data.style,                                   // N: 영업 방식
+            data.client,                                  // O: 주력 고객
+            data.port,                                    // P: 주력 상품군
+            data.w,                                       // Q: W 연속영업
+            data.count,                                   // R: 월 평균 건수
+            data.premium,                                 // S: 평균월납보험료
+            data.mdrt,                                    // T: MDRT 경험
+            data.p13,                                     // U: 13회차 유지율
+            data.p25,                                     // V: 25회차 유지율
+            data.needs,                                   // W: 현재 불만/니즈
+            data.final_bounty,                             // X: 최종 이적료
+            data.racer ? data.racer.name : 'N/A',         // Y: 선택 캐릭터
+            data.stats ? JSON.stringify(data.stats) : ''  // Z: 능력치 데이터
         ];
 
         await sheets.spreadsheets.values.append({
@@ -90,7 +93,7 @@ app.post('/api/submit', async (req, res) => {
             resource: { values: [row] },
         });
 
-        console.log(`✅ [저장 성공] No.${entryNo} - ${data.userName || data.name}`);
+        console.log(`✅ [저장 성공] No.${entryNo} - ${data.userName || data.name} (${data.affiliation})`);
         res.status(200).json({ success: true, entryNo });
 
     } catch (error) {
