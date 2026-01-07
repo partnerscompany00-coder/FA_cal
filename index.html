@@ -16,6 +16,7 @@
             --kart-yellow: #fff300;
             --kart-green: #37d300;
             --kart-dark: #121212;
+            --manager-gold: #fbbf24;
             --glass-bg: rgba(255, 255, 255, 0.95);
             --glass-border: rgba(255, 255, 255, 0.4);
         }
@@ -57,7 +58,7 @@
 
         .scene {
             flex: 1; position: relative; z-index: 10; display: flex; flex-direction: column;
-            align-items: center; padding: 20px; padding-bottom: 120px; overflow-y: auto; width: 100%;
+            align-items: center; padding: 20px; padding-bottom: 80px; overflow-y: auto; width: 100%;
         }
         .scene::-webkit-scrollbar { display: none; }
 
@@ -83,22 +84,25 @@
         .glass-panel {
             background: var(--glass-bg); border-radius: 24px; padding: 24px; width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px;
-            backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px); border: 2px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
-        .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
-        .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
+        /* 관리자(팀 정보) 입력 시 테마 반전 */
+        .glass-panel.manager-mode {
+            background: rgba(18, 18, 18, 0.92);
+            border-color: var(--manager-gold);
+            color: white;
+        }
+        .glass-panel.manager-mode .q-text { color: white; }
+        .glass-panel.manager-mode .input-label { color: var(--manager-gold); }
 
-        .racer-card {
-            background: white; border-radius: 16px; padding: 12px;
-            display: flex; align-items: center; cursor: pointer;
-            border: 2px solid #eee; box-shadow: 0 4px 0 #ddd;
-            transition: all 0.2s; margin-bottom: 10px;
-        }
-        .racer-card:hover { background: #fff9c4; border-color: var(--kart-yellow); transform: translateY(-2px); }
-        .racer-img-box {
-            width: 48px; height: 48px; border-radius: 50%; background: #f0f0f0; margin-right: 15px;
-            display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #000;
-        }
+        .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+        .manager-badge { background: var(--manager-gold); color: black; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 900; animation: blink 1s infinite; }
+        
+        @keyframes blink { 50% { opacity: 0.6; } }
+
+        .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
 
         .option-btn {
             display: block; width: 100%; text-align: left;
@@ -106,10 +110,13 @@
             padding: 14px; margin-bottom: 10px;
             font-size: 15px; font-weight: 700; border-radius: 12px;
             box-shadow: 0 4px 0 #ddd; transition: 0.1s;
-            position: relative;
+            position: relative; color: #333;
         }
-        .option-btn.selected { background: #fff9c4; border-color: var(--kart-yellow); box-shadow: 0 4px 0 #fbc02d; }
+        .option-btn.selected { background: #fff9c4; border-color: var(--kart-yellow); box-shadow: 0 4px 0 #fbc02d; color: black; }
         .option-btn.selected::after { content: '🏁'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+
+        .option-btn.multi-selected { background: #e3f2fd; border-color: #2196f3; box-shadow: 0 4px 0 #1976d2; color: black; }
+        .option-btn.multi-selected::after { content: '✅'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
         .nav-btn {
             flex: 1; padding: 14px; text-align: center; border-radius: 16px;
@@ -118,15 +125,18 @@
         .btn-back { background: #f1f5f9; color: #64748b; box-shadow: 0 4px 0 #cbd5e1; }
         .btn-next { background: var(--kart-green); color: white; box-shadow: 0 4px 0 #16a34a; }
 
-        .kart-input {
-            width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px;
-            font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #fff;
+        .kart-input, .kart-select {
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 15px; font-weight: bold; outline: none; background: #fff; margin-bottom: 8px; color: black;
         }
+        .manager-mode .kart-input { border-color: var(--manager-gold); background: #222; color: white; }
 
-        .terms-box { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .terms-detail { display: none; font-size: 10px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc; line-height: 1.5; text-align: left; }
+        .input-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 4px; display: block; padding-left: 4px; text-align: left; }
+
+        .terms-box { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; margin-bottom: 8px; color: black; }
+        .terms-detail { display: none; font-size: 10px; color: #666; margin-top: 5px; line-height: 1.4; border-top: 1px dashed #ccc; padding-top: 5px; text-align: left; }
         .terms-detail.show { display: block; }
-        .view-btn { font-size: 11px; color: var(--kart-blue); text-decoration: underline; font-weight: bold; cursor: pointer; }
+        .view-link { font-size: 10px; color: var(--kart-blue); text-decoration: underline; cursor: pointer; }
 
         .impact-badge {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
@@ -160,7 +170,6 @@
 <div class="kart-frame">
     <div class="road-bg"></div>
 
-    <!-- HUD Area -->
     <div class="hud">
         <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-gray-100">LAP</span>
@@ -181,25 +190,20 @@
             <h1 class="intro-logo">SUPER<br>SALES KART</h1>
             <div class="logo-sub">보험영업인 내 가치 측정하기</div>
         </div>
-        <button class="kart-btn" onclick="goToRacerSelect()">RACE START!</button>
+        <button class="kart-btn" onclick="startRace()">RACE START!</button>
     </div>
 
-    <!-- 2. Racer Select -->
-    <div id="screen-racer" class="scene hidden fade-in">
-        <div class="glass-panel">
-            <div class="q-header"><span class="q-tag">SELECT PLAYER</span><span class="text-xs text-gray-400 font-bold" id="racer-progress">1 / 22</span></div>
-            <p class="q-text">나의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
-            <div id="racer-list" class="flex flex-col w-full"></div>
-        </div>
-    </div>
-
-    <!-- 3. Dynamic Question Screen -->
+    <!-- 2. Dynamic Question Screen -->
     <div id="screen-q" class="scene hidden fade-in">
-        <div class="glass-panel">
-            <div class="q-header"><span class="q-tag" id="q-category">DRIVING</span><span class="text-xs text-gray-400 font-bold" id="q-progress">2 / 22</span></div>
+        <div class="glass-panel" id="main-panel">
+            <div class="q-header">
+                <span class="q-tag" id="q-category">DRIVING</span>
+                <span id="manager-badge" class="manager-badge hidden">MANAGER MODE</span>
+                <span class="text-xs text-gray-400 font-bold" id="q-progress">1 / 13</span>
+            </div>
             <p class="q-text" id="q-desc">...</p>
             <div id="area-choice" class="flex flex-col"></div>
-            <div id="area-input" class="hidden"></div>
+            <div id="area-input" class="flex flex-col"></div>
         </div>
         <div class="flex gap-3 w-full max-w-[400px] mt-2 px-4">
             <button class="nav-btn btn-back w-1/3" onclick="prevStep()">BACK</button>
@@ -207,70 +211,50 @@
         </div>
     </div>
 
-    <!-- 4. Result Screen -->
+    <!-- 3. Result Screen -->
     <div id="screen-result" class="scene hidden fade-in" style="padding-top:40px;">
-        <div class="glass-panel text-center relative">
+        <div class="glass-panel text-center relative border-blue-200 border-4">
             <div class="entry-no-badge" id="res-entry-box" style="display:none;">PLAYER NO.<span id="res-entry-no">---</span></div>
-            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4"><span id="res-racer-icon">🏆</span></div>
+            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4">🏆</div>
             <h2 class="text-2xl font-black text-gray-800 mb-1 text-center">FINISH!</h2>
-            <p class="text-xs text-gray-500 font-bold mb-6 uppercase tracking-widest text-center">Course Clear • New Record</p>
+            <p class="text-xs text-gray-500 font-bold mb-6 uppercase tracking-widest text-center font-bold">Course Clear • New Record</p>
 
-            <!-- 가치 섹션 -->
             <div class="bg-gradient-to-br from-blue-50 to-sky-50 p-4 rounded-2xl border-2 border-white shadow-inner text-center mb-6">
                 <p class="text-[10px] font-bold text-blue-500 tracking-widest mb-1 text-center uppercase font-bold">Estimated Bounty</p>
                 <div class="text-3xl font-black text-gray-800 text-center"><span id="finalPrice">0</span> <span class="text-lg text-gray-500 font-bold">만원</span></div>
-                <p class="text-[10px] font-bold text-gray-400 mt-1 text-center">시장 기준 대비 <span class="text-red-500" id="finalPct">0</span>% 인정</p>
+                <p class="text-[10px] font-bold text-gray-400 mt-1 text-center font-bold">기준 금액 대비 <span class="text-red-500" id="finalPct">0</span>% 인정</p>
             </div>
 
             <div style="height: 180px; width: 100%; margin-bottom: 20px;"><canvas id="radarChart"></canvas></div>
 
-            <!-- 예상 수수료 비전 섹션 -->
-            <div class="bg-blue-900/5 border-2 border-blue-100 p-4 rounded-3xl mb-6 text-center">
+            <div class="bg-blue-900/5 border-2 border-blue-100 p-4 rounded-3xl mb-6 text-center font-bold">
                 <h3 class="text-[11px] font-black text-blue-800 mb-4 flex items-center justify-center gap-1 tracking-wider uppercase">
                     <i class="ph-fill ph-rocket-launch text-blue-500"></i> Potential Earnings
                 </h3>
-                
-                <div class="grid grid-cols-2 gap-3 px-1">
-                    <!-- 익월 예상 수수료 -->
-                    <div class="bg-white p-3 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
-                        <div class="impact-badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); width: 100%; font-size: 9px; padding: 2px 0;">익월 예상 수수료율 750%</div>
-                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">익월 예상<br>수수료</p>
-                        <p class="text-xl font-black text-blue-600 text-center"><span id="resNextMonthPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
-                    </div>
-                    
-                    <!-- 13차월 예상 수수료 -->
-                    <div class="bg-white p-3 rounded-2xl border border-red-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
-                        <div class="impact-badge" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE0000 100%); color: #fff; width: 100%; font-size: 9px; padding: 2px 0;">13차월 예상 수수료율 1300%</div>
-                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">13차월 예상<br>수수료</p>
-                        <p class="text-xl font-black text-red-600 text-center"><span id="resTotalYearPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
-                    </div>
-                </div>
-
-                <div class="mt-4 px-1 text-center">
-                    <p class="text-[9px] text-blue-600 font-bold mb-1 leading-normal">
-                        ※ 위 수치는 기입하신 평균 월납보험료 <span id="resRefPremium" class="underline font-black">0</span>만원을<br>기준으로 산출된 수치입니다.
+                <div id="commission-container" class="grid grid-cols-2 gap-3 px-1"></div>
+                <div class="mt-4 px-1 text-center font-bold">
+                    <p class="text-[13px] text-blue-700 font-black mb-1 leading-snug bg-blue-50 py-2 rounded-xl border border-blue-100">
+                        ※ 위 수치는 기입하신 평균 월납보험료 <span id="resRefPremium" class="underline decoration-2 font-black text-red-600 px-1 text-[15px]">0</span>만원을<br>기준으로 산출된 수치입니다.
                     </p>
-                    <p class="text-[8px] text-gray-400 leading-tight">
-                        * 건강보험 판매 기준, 생명보험사 수수료 평균치 산출<br>
+                    <p class="text-[8px] text-gray-400 leading-tight mt-2">
                         * 예상 수수료율은 매월 시상의 평균치가 포함된 예상치이며,<br>실제 수수료는 계약 조건 및 상품군에 따라 차이가 발생할 수 있습니다.
                     </p>
                 </div>
             </div>
             
-            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left mb-6">
-                <strong class="text-yellow-400 block mb-1 text-xs font-black">📢 PIT CREW'S ADVICE:</strong>
+            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left mb-6 font-bold">
+                <strong class="text-yellow-400 block mb-1 text-xs font-black font-bold">📢 PIT CREW'S ADVICE:</strong>
                 <span id="aiAdvice">데이터 분석 중...</span>
             </div>
 
-            <!-- 하단 저작권 -->
             <div class="pt-2 text-center opacity-60 border-t border-gray-100">
-                <p class="text-[8px] text-gray-400 text-center">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
+                <p class="text-[8px] text-gray-400 text-center font-bold">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
             </div>
         </div>
         <button class="kart-btn w-full text-lg mt-4 mb-10" onclick="location.reload()">다시 하기</button>
     </div>
 
-    <!-- 전역 저작권 푸터 -->
+    <!-- Global Footer -->
     <div class="global-footer" id="global-footer">
         <p class="copyright-text">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
     </div>
@@ -279,35 +263,45 @@
 <script>
     const BACKEND_URL = 'https://fa-cal.onrender.com/api/submit';
 
-    const racerList = [
-        { id: 'mario', name: '마리오 (리더형)', desc: '팀을 이끄는 탁월한 조직 관리자', icon: '🧢' },
-        { id: 'luigi', name: '루이지 (밸런스)', desc: '기본기가 탄탄한 팔방미인 영업자', icon: '🟢' },
-        { id: 'bowser', name: '쿠퍼 (파워형)', desc: '클로징 마스터 (결정력)', icon: '🔥' },
-        { id: 'yoshi', name: '요시 (스피드)', desc: '전화 연결의 신, TA 고수', icon: '🥚' },
-        { id: 'toad', name: '키노피오 (서포트)', desc: '조직의 핵심 조력자', icon: '🍄' }
-    ];
+    const regionData = {
+        "서울": ["강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"],
+        "경기": ["수원시", "고양시", "용인시", "성남시", "부천시", "화성시", "안산시", "남양주시", "안양시", "평택시", "시흥시", "파주시", "의정부시", "김포시", "광주시", "광명시", "군포시", "하남시", "오산시", "이천시", "안성시", "의왕시", "양주시", "구리시", "포천시", "동두천시", "과천시", "가평군", "양평군", "여주시", "연천군"],
+        "인천": ["계양구", "남동구", "동구", "미추홀구", "부평구", "서구", "연수구", "중구", "강화군", "옹진군"],
+        "대전": ["대덕구", "동구", "서구", "유성구", "중구"],
+        "부산": ["강서구", "금정구", "남구", "동구", "동래구", "부산진구", "북구", "사상구", "사하구", "서구", "수영구", "연제구", "영도구", "중구", "해운대구", "기장군"],
+        "대구": ["남구", "달서구", "동구", "북구", "서구", "수성구", "중구", "달성군"]
+    };
 
     const questions = [
-        { id: 'affiliation', title: '현재 소속', text: '현재 어떤 보험사에서 활동중이신가요?', type: 'choice', opts: ['생명보험 (원수사)', '손해보험 (원수사)', 'GA (법인대리점)'] },
-        { id: 'rank', title: '직급', text: '현재 직급을 선택하세요.', type: 'choice', opts: ['팀원', '팀장', '지점장', '본부장'] },
-        { id: 'team_size', title: '조직 규모', text: '산하 팀원은 몇 명인가요?', type: 'input', label: '인원(명)', itype: 'number' },
-        { id: 'recruit_avg', title: '리크루팅', text: '연간 직접 채용 인원은?', type: 'input', label: '명', itype: 'number' },
-        { id: 'license', title: '자격', text: '보유 자격 종류를 선택하세요.', type: 'choice', opts: ['기본 자격', '+ 변액 보험 자격', '+ 금융 전문 자격'] },
+        { id: 'affiliation', title: '현재 소속', text: '현재 어떤 환경에서 활동 중이신가요?', type: 'choice', opts: ['생명보험 (원수사)', '손해보험 (원수사)', 'GA (법인대리점)'] },
         { id: 'career', title: '경력', text: '보험 영업 경력이 어떻게 되나요?', type: 'choice', opts: ['1년 미만', '1~3년', '3~5년', '5~10년', '10년 이상'] },
         { id: 'income', title: '연봉', text: '작년 원천징수 소득을 입력하세요.', type: 'input', label: '만원', itype: 'number' },
-        { id: 'history', title: '이직', text: '최근 3년 내 보험사 이직 횟수는?', type: 'choice', opts: ['없음', '1회', '2회', '3회 이상'] },
-        { id: 'style', title: '방식', text: '주력 영업 방식을 선택하세요.', type: 'choice', opts: ['개척영업', '지인/소개영업', 'DB영업', '이관고객영업', '기타'] },
-        { id: 'client', title: '고객', text: '주력 고객층은 누구인가요?', type: 'choice', opts: ['직장인', '주부', '자영업자', '법인/전문직', '기타'] },
-        { id: 'port', title: '상품', text: '주력 판매 상품군은?', type: 'choice', opts: ['보장성', '저축성', '자동차/화재', '복합'] },
-        { id: 'w', title: '활동기록', text: '연속 청약(W) 기록을 선택하세요.', type: 'choice', opts: ['없음', '1W 20주+', '2W 20주+', '3W 50주+'] },
-        { id: 'perf', title: '평균 실적', text: '월 평균 실적 데이터를 입력하세요.', type: 'multi-input', inputs: [{id:'count', label:'월 건수', type:'number', p:'건'}, {id:'premium', label:'월 보험료', type:'number', p:'만원'}] },
-        { id: 'mdrt', title: 'MDRT', text: 'MDRT 달성 기록을 선택하세요.', type: 'choice', opts: ['없음', 'MDRT', 'COT', 'TOT'] },
-        { id: 'mdrt_cnt', title: 'MDRT 횟수', text: 'MDRT 달성 횟수는?', type: 'choice', opts: ['1회', '2회', '3~4회', '5회 이상'], condition: (d) => d.mdrt !== '없음' },
+        { id: 'perf', title: '개인 실적', text: '본인의 월 평균 실적을 입력하세요.', type: 'multi-input', inputs: [{id:'count', label:'월 평균 건수', type:'number', p:'건'}, {id:'premium', label:'월 평균 보험료', type:'number', p:'만원'}] },
         { id: 'qual', title: '유지율', text: '계약 유지율을 입력해주세요.', type: 'multi-input', inputs: [{id:'p13', label:'13회차 (%)', type:'number', p:'%'}, {id:'p25', label:'25회차 (%)', type:'number', p:'%'}] },
-        { id: 'needs', title: '현재 불만', text: '현재 조직에서 가장 아쉬운 점은?', type: 'choice', opts: ['DB 지원 부족', '수수료/보상 체계', '교육 시스템 부재', '조직 문화/비전', '불만 없음'] },
-        { id: 'info', title: '기본 정보', text: '리포트 발급을 위한 정보 입력', type: 'multi-input', inputs: [{id:'userName', label:'이름', type:'text', p:'성함'}, {id:'region', label:'지역', type:'text', p:'활동지역'}] },
-        { id: 'gender', title: '성별', text: '성별을 선택해주세요.', type: 'choice', opts: ['남성', '여성'] },
-        { id: 'phone', title: '연락처', text: '결과 수신 및 약관 동의', type: 'phone' }
+        { id: 'port', title: '상품군', text: '주력 판매 상품군은 무엇인가요?', type: 'choice', opts: ['보장성', '종신보험', '연금/저축성', '자동차/운전자/화재', '복합'] },
+        { id: 'style', title: '영업방식', text: '주력 영업 방식을 선택하세요.', type: 'choice', opts: ['개척영업', '지인/소개영업', 'DB영업', '이관고객영업', '기타'] },
+        { id: 'honor', title: '명예 기록', text: '보유하신 주요 기록을 선택하세요.\n(다중 선택 가능)', type: 'multi-choice', opts: ['연속 W 기록 보유', 'MDRT 달성', 'COT 달성', 'TOT 달성'] },
+        { id: 'position_type', title: '포지션', text: '현재 본인의 주요 포지션은 무엇인가요?', type: 'choice', opts: ['조직관리자', '대면영업자', 'TM 영업자', '기타'] },
+        { id: 'rank', title: '직급', text: '현재 직급을 선택하세요.', type: 'choice', opts: ['팀원', '팀장', '지점장', '본부장/임원'] },
+        { 
+            id: 'team_info', 
+            title: '팀 정보', 
+            text: '관리하시는 팀의 규모와 실적을 입력하세요.', 
+            type: 'multi-input', 
+            condition: (d) => ['팀장', '지점장', '본부장/임원'].includes(d.rank),
+            inputs: [
+                {id:'team_size', label:'팀 전체 인원수', type:'number', p:'명'},
+                {id:'team_premium', label:'팀 합산 월납보험료', type:'number', p:'만원'}
+            ]
+        },
+        { 
+            id: 'pay_preference', 
+            title: '수수료 선호도', 
+            text: '선호하는 수수료 지급 방식을 선택하세요.', 
+            type: 'choice', 
+            opts: ['익월 선지급 2000% (총 2000%)', '익월 1000% + 13차월 1500% (총 2500%)'] 
+        },
+        { id: 'info_final', title: '정보 입력', text: '리포트 발급을 위한 정보 입력', type: 'complex-form' }
     ];
 
     let userData = {};
@@ -321,24 +315,7 @@
         else document.getElementById('global-footer').classList.remove('hidden');
     }
 
-    function goToRacerSelect() {
-        showScreen('screen-racer');
-        const list = document.getElementById('racer-list');
-        list.innerHTML = '';
-        racerList.forEach(r => {
-            const el = document.createElement('div');
-            el.className = 'racer-card';
-            el.innerHTML = `<div class="racer-img-box">${r.icon}</div>
-                            <div class="flex-1 text-left">
-                                <h4 class="font-bold text-sm text-gray-800">${r.name}</h4>
-                                <p class="text-[10px] text-gray-500">${r.desc}</p>
-                            </div>`;
-            el.onclick = () => { userData['racer'] = r; startRace(); };
-            list.appendChild(el);
-        });
-    }
-
-    function startRace() { currentIdx = 0; showScreen('screen-q'); renderQuestion(); }
+    function startRace() { currentIdx = 0; userData = {}; showScreen('screen-q'); renderQuestion(); }
 
     function renderQuestion() {
         while (currentIdx < questions.length) {
@@ -348,15 +325,26 @@
         if (currentIdx >= questions.length) { submitData(); return; }
 
         const q = questions[currentIdx];
-        const lapNum = currentIdx + 2; 
+        const lapNum = currentIdx + 1; 
         document.getElementById('stepIndicator').innerText = `LAP ${lapNum}`;
-        document.getElementById('q-progress').innerText = `${lapNum} / ${questions.length + 1}`;
+        document.getElementById('q-progress').innerText = `${lapNum} / ${questions.length}`;
         document.getElementById('q-desc').innerText = q.text;
 
+        const panel = document.getElementById('main-panel');
+        const mBadge = document.getElementById('manager-badge');
         const cArea = document.getElementById('area-choice'), iArea = document.getElementById('area-input');
+        
         cArea.innerHTML = ''; iArea.innerHTML = '';
         cArea.classList.add('hidden'); iArea.classList.add('hidden');
         document.getElementById('btn-next-manual').classList.add('hidden');
+
+        if(q.id === 'team_info') {
+            panel.classList.add('manager-mode');
+            mBadge.classList.remove('hidden');
+        } else {
+            panel.classList.remove('manager-mode');
+            mBadge.classList.add('hidden');
+        }
 
         if (q.type === 'choice') {
             cArea.classList.remove('hidden');
@@ -367,105 +355,126 @@
                 btn.onclick = () => { userData[q.id] = opt; currentIdx++; renderQuestion(); };
                 cArea.appendChild(btn);
             });
-        } else if (q.type === 'multi-input') {
-            iArea.classList.remove('hidden');
+        } else if (q.type === 'multi-choice') {
+            cArea.classList.remove('hidden');
             document.getElementById('btn-next-manual').classList.remove('hidden');
-            q.inputs.forEach(inp => {
-                iArea.innerHTML += `<label class="text-[11px] font-bold text-gray-500 block mb-1">${inp.label}</label><input type="${inp.type}" id="inp_${inp.id}" class="kart-input mb-4" placeholder="${inp.p} 입력..." value="${userData[inp.id] || ''}">`;
+            if(!userData[q.id]) userData[q.id] = [];
+            q.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn ${userData[q.id].includes(opt) ? 'multi-selected' : ''}`;
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if(userData[q.id].includes(opt)) userData[q.id] = userData[q.id].filter(i => i !== opt);
+                    else userData[q.id].push(opt);
+                    renderQuestion(); 
+                };
+                cArea.appendChild(btn);
             });
-        } else if (q.type === 'phone') {
-            iArea.classList.remove('hidden');
-            document.getElementById('btn-next-manual').classList.remove('hidden');
-            iArea.innerHTML = `
-                <div class="flex gap-2 items-center justify-center mb-4">
-                    <input type="text" value="010" readonly class="kart-input w-24 bg-gray-100 text-gray-400">
-                    <input type="tel" id="p_body" class="kart-input flex-1" maxlength="8" placeholder="나머지 8자리 숫자">
-                </div>
-                <div class="terms-box">
-                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree1" class="w-4 h-4 accent-blue-500"> [필수] 개인정보 수집 및 이용 동의</label><span class="view-btn" onclick="toggleTerms('detail1')">보기</span></div>
-                    <div id="detail1" class="terms-detail">메타리치 파트너스지사는 채용 및 상담을 목적으로 성명, 연락처, 실적 등을 수집합니다. (위탁: (주)파트너스컴퍼니)</div>
-                </div>
-                <div class="terms-box">
-                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree2" class="w-4 h-4 accent-blue-500"> [필수] 제3자 정보 제공 동의</label><span class="view-btn" onclick="toggleTerms('detail2')">보기</span></div>
-                    <div id="detail2" class="terms-detail">수집된 데이터는 최적의 채용 제안을 위해 관리자에게 제공될 수 있습니다.</div>
-                </div>
-            `;
         } else {
             iArea.classList.remove('hidden');
             document.getElementById('btn-next-manual').classList.remove('hidden');
-            iArea.innerHTML = `<input type="${q.itype || 'text'}" id="q-input" class="kart-input" placeholder="${q.label}" value="${userData[q.id] || ''}">`;
+            if (q.type === 'multi-input') {
+                q.inputs.forEach(inp => {
+                    let icon = q.id === 'team_info' ? (inp.id === 'team_size' ? '👥 ' : '💰 ') : '';
+                    iArea.innerHTML += `<label class="input-label">${icon}${inp.label}</label><input type="${inp.type}" id="inp_${inp.id}" class="kart-input mb-4" placeholder="${inp.p} 입력..." value="${userData[inp.id] || ''}">`;
+                });
+            } else if (q.type === 'input') {
+                iArea.innerHTML = `<label class="input-label">${q.label}</label><input type="${q.itype || 'text'}" id="q-input" class="kart-input" placeholder="${q.label} 입력..." value="${userData[q.id] || ''}">`;
+            } else if (q.type === 'complex-form') {
+                iArea.innerHTML = `
+                    <label class="input-label">성함</label><input type="text" id="form_name" class="kart-input" placeholder="이름 입력">
+                    <label class="input-label">연락처</label>
+                    <div class="flex gap-2"><input type="text" value="010" readonly class="kart-input w-24 bg-gray-100 text-gray-400 font-bold"><input type="tel" id="form_phone" class="kart-input flex-1" maxlength="8" placeholder="나머지 8자리"></div>
+                    <label class="input-label">연령대</label>
+                    <select id="form_age" class="kart-select font-bold"><option value="">연령대 선택</option><option value="20대">20대</option><option value="30대">30대</option><option value="40대">40대</option><option value="50대">50대</option><option value="60대 이상">60대 이상</option></select>
+                    <label class="input-label">거주 지역</label>
+                    <div class="flex gap-2"><select id="form_sido" class="kart-select flex-1 font-bold" onchange="updateSigungu()"><option value="">시/도</option>${Object.keys(regionData).map(s => `<option value="${s}">${s}</option>`).join('')}</select><select id="form_sigungu" class="kart-select flex-1 font-bold"><option value="">시/군/구</option></select></div>
+                    <div class="terms-box mt-2">
+                        <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree1" class="w-4 h-4 accent-blue-500"> [필수] 개인정보 수집 이용 동의</label><span class="view-link" onclick="toggleTerms('detail1')">보기</span></div>
+                        <div id="detail1" class="terms-detail text-xs">분석 및 채용 제안을 위해 성명, 연락처, 실적 등을 수집하며 수집일로부터 3년간 보유합니다. (위탁: (주)파트너스컴퍼니)</div>
+                        <div class="flex items-center justify-between font-bold text-[11px] mt-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="agree2" class="w-4 h-4 accent-blue-500"> [필수] 제3자 정보 제공 동의</label><span class="view-link" onclick="toggleTerms('detail2')">보기</span></div>
+                        <div id="detail2" class="terms-detail text-xs">수집된 데이터는 최적의 채용 제안을 위해 메타리치 파트너스지사 산하 관리자에게 제공될 수 있습니다.</div>
+                    </div>
+                `;
+            }
         }
     }
+
+    window.updateSigungu = () => {
+        const sido = document.getElementById('form_sido').value;
+        const sigungu = document.getElementById('form_sigungu');
+        sigungu.innerHTML = '<option value="">시/군/구</option>';
+        if(sido && regionData[sido]) { regionData[sido].forEach(s => { sigungu.innerHTML += `<option value="${s}">${s}</option>`; }); }
+    };
 
     window.toggleTerms = (id) => document.getElementById(id).classList.toggle('show');
 
     function handleNext() {
         const q = questions[currentIdx];
-        if (q.type === 'multi-input') {
+        if (q.type === 'multi-choice') { if(!userData[q.id] || userData[q.id].length === 0) userData[q.id] = ["기록 없음"]; }
+        else if (q.type === 'multi-input') {
             let valid = true;
             q.inputs.forEach(inp => {
                 const val = document.getElementById(`inp_${inp.id}`).value;
                 if(!val) valid = false; userData[inp.id] = val;
             });
             if(!valid) return alert('모든 항목을 입력해 주세요!');
-        } else if (q.type === 'phone') {
-            const body = document.getElementById('p_body').value;
-            const agree1 = document.getElementById('agree1').checked, agree2 = document.getElementById('agree2').checked;
-            if(body.length < 8) return alert('연락처 8자리를 입력해 주세요!');
-            if(!agree1 || !agree2) return alert('필수 약관에 동의하셔야 결과 확인이 가능합니다.');
-            userData['phone'] = `010-${body.substring(0,4)}-${body.substring(4,8)}`;
-        } else if (q.type === 'input') {
-            const val = document.getElementById('q-input').value;
-            if(!val) return alert('내용을 입력해 주세요!'); userData[q.id] = val;
+        } else if (q.type === 'complex-form') {
+            const name = document.getElementById('form_name').value, phone = document.getElementById('form_phone').value, age = document.getElementById('form_age').value, sido = document.getElementById('form_sido').value, sigungu = document.getElementById('form_sigungu').value, a1 = document.getElementById('agree1').checked, a2 = document.getElementById('agree2').checked;
+            if(!name || phone.length < 8 || !age || !sido || !sigungu) return alert('정보를 정확히 입력해 주세요!');
+            if(!a1 || !a2) return alert('필수 약관에 동의하셔야 리포트 확인이 가능합니다.');
+            userData.userName = name; userData.phone = `010-${phone.substring(0,4)}-${phone.substring(4,8)}`; userData.age = age; userData.region = `${sido} ${sigungu}`;
         }
         currentIdx++; renderQuestion();
     }
 
-    function prevStep() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } else { goToRacerSelect(); } }
+    function prevStep() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } else { showScreen('screen-intro'); } }
 
     async function submitData() {
         let bonus = 0;
-        const ts = parseInt(userData.team_size || 0);
-        if(ts >= 10) bonus += 5; else if(ts >= 5) bonus += 4; else if(ts >= 3) bonus += 3;
+        const rk = userData.rank;
+        if (rk === '본부장/임원') bonus += 5; else if (rk === '지점장') bonus += 3; else if (rk === '팀장') bonus += 2;
+
+        if (['팀장', '지점장', '본부장/임원'].includes(rk)) {
+            const teamPrem = parseInt(userData.team_premium || 0), teamSize = parseInt(userData.team_size || 1);
+            const teamProd = teamPrem / teamSize;
+            let teamBonusBase = 0;
+            if (teamPrem >= 5000) teamBonusBase = 30; else if (teamPrem >= 4000) teamBonusBase = 25; else if (teamPrem >= 3000) teamBonusBase = 20; else if (teamPrem >= 2000) teamBonusBase = 15; else if (teamPrem >= 1000) teamBonusBase = 10;
+            let applyRate = 0.5;
+            if (teamProd > 100) applyRate = 1.1; else if (teamProd > 60) applyRate = 1.0; else if (teamProd > 50) applyRate = 0.85; else if (teamProd > 40) applyRate = 0.6;
+            bonus += (teamBonusBase * applyRate);
+        }
+
         const cr = userData.career;
         if(cr === '1년 미만') bonus -= 2; else if(['3~5년','5~10년','10년 이상'].includes(cr)) bonus += (cr==='10년 이상'?3:cr==='5~10년'?2:1);
-        if(userData.style === 'DB영업') bonus += 3;
-        const cnt = parseInt(userData.count || 0);
+        
         const prem = parseInt(userData.premium || 0);
-        if(prem >= 100) bonus += 8; else if(prem >= 60) bonus += 5;
-        const avg = prem / (cnt || 1);
-        if(avg >= 15) bonus += 5;
-        const p13 = parseInt(userData.p13 || 0);
-        if(p13 > 90) bonus += 3;
+        if (prem >= 200) bonus += 20; else if (prem >= 150) bonus += 15; else if (prem >= 100) bonus += 10; else if (prem >= 90) bonus += 8; else if (prem >= 80) bonus += 7; else if (prem >= 70) bonus += 6; else if (prem >= 60) bonus += 5;
 
-        // 최종 몸값 계산 분기
-        let baseValue;
-        if (userData.career === '1년 미만') {
-            baseValue = 1500; // 신입 베이스 고정
-        } else {
-            let incomeInput = parseInt(userData.income) || 5000;
-            baseValue = incomeInput * 0.55;
-        }
+        const p13 = parseInt(userData.p13 || 0);
+        if (p13 >= 95) bonus += 7; else if (p13 >= 90) bonus += 5; else if (p13 >= 85) bonus += 4; else if (p13 >= 80) bonus += 3;
+
+        let baseValue = userData.career === '1년 미만' ? 2000 : (parseInt(userData.income) || 5000) * 0.6;
         const finalVal = Math.round(baseValue * (1 + bonus / 100));
 
-        // 수당 계산
-        const nextMonthPay = Math.round(prem * 7.5);
-        const totalYearPay = Math.round(prem * 13.0);
-
         showScreen('screen-result');
-        document.getElementById('res-racer-icon').innerText = userData.racer.icon;
         document.getElementById('finalPrice').innerText = finalVal.toLocaleString();
-        
-        const referenceValue = (userData.career === '1년 미만') ? 1500 : (parseInt(userData.income) || 5000);
-        document.getElementById('finalPct').innerText = Math.round((finalVal / referenceValue) * 100);
-        
-        document.getElementById('resNextMonthPay').innerText = nextMonthPay.toLocaleString();
-        document.getElementById('resTotalYearPay').innerText = totalYearPay.toLocaleString();
+        const refValue = (userData.career === '1년 미만') ? 2000 : (parseInt(userData.income) || 5000);
+        document.getElementById('finalPct').innerText = Math.round((finalVal / refValue) * 100);
         document.getElementById('resRefPremium').innerText = prem.toLocaleString();
 
-        document.getElementById('aiAdvice').innerText = `${userData.userName}님, 분석 결과 당신의 질주는 업계 상위권의 궤적을 그리고 있습니다. 특히 가중치 ${bonus}% 가산은 시장에서도 매우 우수한 성취입니다!`;
+        const commContainer = document.getElementById('commission-container');
+        const payPref = userData.pay_preference;
+        if (payPref.includes('2000%')) {
+            commContainer.className = "flex flex-col items-center px-1";
+            commContainer.innerHTML = `<div class="bg-white p-4 rounded-2xl border-2 border-blue-400 shadow-md w-full text-center font-bold"><div class="impact-badge" style="background: linear-gradient(135deg, #009dfd 0%, #00f2ea 100%); color: #fff; padding: 4px 15px; font-size: 11px;">🏆 익월 선지급 2000% 선수당</div><p class="text-[11px] text-gray-500 font-bold mt-3 mb-1">TOTAL CASH FLOW</p><p class="text-3xl font-black text-blue-600"><span>${(prem * 20).toLocaleString()}</span><span class="text-sm ml-1 font-bold">만원</span></p></div>`;
+        } else {
+            commContainer.className = "grid grid-cols-2 gap-3 px-1";
+            commContainer.innerHTML = `<div class="bg-white p-3 rounded-2xl border border-blue-200 shadow-sm flex flex-col justify-between min-h-[110px] font-bold"><div class="impact-badge" style="font-size: 8px;">익월 선지급 1000%</div><p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center font-bold">익월 예상 수당</p><p class="text-xl font-black text-blue-600 text-center"><span>${(prem * 10).toLocaleString()}</span><span class="text-xs ml-0.5 font-bold">만</span></p></div><div class="bg-white p-3 rounded-2xl border border-red-200 shadow-sm flex flex-col justify-between min-h-[110px] font-bold"><div class="impact-badge" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE0000 100%); color: #fff; font-size: 8px;">13차월 후지급 1500%</div><p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center font-bold">13차월 예상 수당</p><p class="text-xl font-black text-red-600 text-center"><span>${(prem * 15).toLocaleString()}</span><span class="text-xs ml-0.5 font-bold">만</span></p></div>`;
+        }
 
-        renderRadarChart([Math.min(10, prem/12+2), Math.min(10, avg/2+1), Math.min(10, p13/10), 5, Math.min(10, ts/1.5+3)]);
+        document.getElementById('aiAdvice').innerText = `${userData.userName}님, 데이터 기반 분석 결과 총 ${bonus}%의 가중치가 당신의 커리어를 증명합니다. 특히 생산성 계수가 매우 탁월합니다!`;
+        renderRadarChart([Math.min(10, prem/15+2), 8, Math.min(10, p13/10), 7, Math.min(10, (parseInt(userData.team_size)||0)/2+3)]);
 
         try {
             const res = await fetch(BACKEND_URL, {
@@ -488,9 +497,7 @@
             type: 'radar',
             data: {
                 labels: ['생산성', '효율성', '유지율', '전문성', '리더십'],
-                datasets: [{
-                    data: data, backgroundColor: 'rgba(0, 157, 253, 0.2)', borderColor: '#009dfd', borderWidth: 2, pointBackgroundColor: '#fff'
-                }]
+                datasets: [{ data: data, backgroundColor: 'rgba(0, 157, 253, 0.2)', borderColor: '#009dfd', borderWidth: 2, pointBackgroundColor: '#fff' }]
             },
             options: { scales: { r: { min: 0, max: 10, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
         });
